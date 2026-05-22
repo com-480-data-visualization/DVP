@@ -1,0 +1,175 @@
+<svg viewBox="0 0 700 510" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+<defs>
+  <!-- Gradients -->
+  <linearGradient id="gMain" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#ffe566" stop-opacity="1"/>
+    <stop offset="80%" stop-color="#e8a828" stop-opacity="0.95"/>
+  </linearGradient>
+  <linearGradient id="gBack" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#b87800" stop-opacity="0.5"/>
+    <stop offset="100%" stop-color="#7a4c00" stop-opacity="0.3"/>
+  </linearGradient>
+  <linearGradient id="gRose" x1="0%" y1="0%" x2="0%" y2="100%">
+    <stop offset="0%" stop-color="#ff8099" stop-opacity="0.88"/>
+    <stop offset="100%" stop-color="#cc1840" stop-opacity="0.65"/>
+  </linearGradient>
+  <linearGradient id="gBall" x1="20%" y1="10%" x2="80%" y2="90%">
+    <stop offset="0%" stop-color="#f5c842" stop-opacity="0.18"/>
+    <stop offset="100%" stop-color="#f5c842" stop-opacity="0.05"/>
+  </linearGradient>
+  <!-- Glows -->
+  <filter id="fg" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="fgs" x="-40%" y="-40%" width="180%" height="180%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="fgb" x="-80%" y="-80%" width="260%" height="260%">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="18" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+<!-- Atmospheric background glow -->
+<radialGradient id="bgGlow" cx="55%" cy="55%" r="42%">
+  <stop offset="0%" stop-color="#f5c842" stop-opacity="0.1"/>
+  <stop offset="100%" stop-color="#f5c842" stop-opacity="0"/>
+</radialGradient>
+<ellipse cx="390" cy="310" rx="320" ry="220" fill="url(#bgGlow)"/>
+
+<!-- Rose glow for P3 area -->
+<radialGradient id="roseGlow" cx="78%" cy="50%" r="25%">
+  <stop offset="0%" stop-color="#ff4d6d" stop-opacity="0.08"/>
+  <stop offset="100%" stop-color="#ff4d6d" stop-opacity="0"/>
+</radialGradient>
+<ellipse cx="545" cy="320" rx="200" ry="180" fill="url(#roseGlow)"/>
+
+<!-- Ground shadow -->
+<ellipse cx="378" cy="480" rx="280" ry="16" fill="rgba(245,200,66,0.09)"/>
+
+<!-- ═══ FOOTBALL ═══ -->
+<!-- Glow under ball -->
+<circle cx="455" cy="445" r="68" fill="none" stroke="#f5c842" stroke-width="40" stroke-opacity="0.05" filter="url(#fgb)"/>
+<!-- Ball body -->
+<circle cx="455" cy="440" r="62" fill="#0a0a14" stroke="#f5c842" stroke-width="2.2" stroke-opacity="0.55"/>
+<!-- Ball inner highlight -->
+<circle cx="440" cy="425" r="30" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+<!-- Pentagon patches (simplified) -->
+<polygon points="455,415 472,426 466,446 444,446 438,426" fill="#f5c842" fill-opacity="0.18" stroke="#f5c842" stroke-width="1.2" stroke-opacity="0.5"/>
+<polygon points="417,430 430,420 444,426 438,446 420,448" fill="#f5c842" fill-opacity="0.1" stroke="#f5c842" stroke-width="1" stroke-opacity="0.4"/>
+<polygon points="466,446 480,436 494,445 490,462 470,466" fill="#f5c842" fill-opacity="0.1" stroke="#f5c842" stroke-width="1" stroke-opacity="0.35"/>
+<!-- Seam lines -->
+<path d="M 430,413 Q 456,407 480,415" fill="none" stroke="#f5c842" stroke-width="1.4" stroke-opacity="0.45"/>
+<path d="M 416,432 Q 430,428 438,424" fill="none" stroke="#f5c842" stroke-width="1.2" stroke-opacity="0.4"/>
+<path d="M 418,448 Q 428,455 440,456" fill="none" stroke="#f5c842" stroke-width="1.1" stroke-opacity="0.35"/>
+<!-- Ball shine -->
+<circle cx="438" cy="422" r="8" fill="rgba(255,255,255,0.07)"/>
+
+<!-- ═══ PLAYER 1 — Left, Running (background, muted gold) ═══ -->
+<g stroke="url(#gBack)" stroke-linecap="round" stroke-linejoin="round" fill="url(#gBack)" filter="url(#fgs)">
+  <!-- Head -->
+  <circle cx="135" cy="255" r="22" stroke="none"/>
+  <!-- Ponytail (flowing right behind) -->
+  <path d="M 148,247 C 162,240 178,236 186,241 C 192,246 189,255 177,256 C 164,257 150,252 148,247 Z" stroke="none"/>
+  <!-- Torso (leaning forward) -->
+  <line x1="145" y1="280" x2="162" y2="360" stroke-width="40"/>
+  <!-- Neck -->
+  <line x1="138" y1="278" x2="145" y2="295" stroke-width="14"/>
+  <!-- Right arm (forward, pumping) -->
+  <polyline points="158,292 188,318 200,340" stroke-width="16" fill="none"/>
+  <!-- Left arm (back) -->
+  <polyline points="128,288 102,310 90,332" stroke-width="16" fill="none"/>
+  <!-- Right leg (forward stride) -->
+  <polyline points="162,362 178,412 184,448" stroke-width="20" fill="none"/>
+  <!-- Left leg (back, pushing off) -->
+  <polyline points="152,360 122,410 108,445" stroke-width="20" fill="none"/>
+  <!-- Feet -->
+  <ellipse cx="185" cy="451" rx="18" ry="8" transform="rotate(12,185,451)" stroke="none"/>
+  <ellipse cx="106" cy="448" rx="16" ry="7" transform="rotate(-15,106,448)" stroke="none"/>
+  <!-- Jersey number hint -->
+</g>
+
+<!-- ═══ PLAYER 3 — Right, Celebrating/Jumping (rose) ═══ -->
+<g stroke="url(#gRose)" stroke-linecap="round" stroke-linejoin="round" fill="url(#gRose)" filter="url(#fgs)">
+  <!-- Head -->
+  <circle cx="572" cy="210" r="25" stroke="none"/>
+  <!-- Hair (curly/out, flowing up) -->
+  <ellipse cx="572" cy="196" rx="22" ry="12" transform="rotate(-8,572,196)" stroke="none"/>
+  <ellipse cx="590" cy="205" rx="16" ry="10" transform="rotate(15,590,205)" stroke="none"/>
+  <!-- Torso -->
+  <line x1="572" y1="238" x2="572" y2="342" stroke-width="46"/>
+  <!-- Neck -->
+  <line x1="572" y1="236" x2="572" y2="252" stroke-width="16"/>
+  <!-- Left arm RAISED (V shape, celebrating) -->
+  <polyline points="550,252 525,212 508,185" stroke-width="20" fill="none"/>
+  <!-- Left forearm continuation -->
+  <!-- Right arm RAISED -->
+  <polyline points="594,252 618,212 635,185" stroke-width="20" fill="none"/>
+  <!-- Left leg (slightly bent) -->
+  <polyline points="558,345 548,408 550,455" stroke-width="22" fill="none"/>
+  <!-- Right leg -->
+  <polyline points="586,345 596,408 594,455" stroke-width="22" fill="none"/>
+  <!-- Feet -->
+  <ellipse cx="550" cy="458" rx="20" ry="9" transform="rotate(-5,550,458)" stroke="none"/>
+  <ellipse cx="595" cy="458" rx="20" ry="9" transform="rotate(5,595,458)" stroke="none"/>
+  <!-- Hands (small circles) -->
+  <circle cx="506" cy="183" r="9" stroke="none"/>
+  <circle cx="637" cy="183" r="9" stroke="none"/>
+</g>
+
+<!-- ═══ PLAYER 2 — CENTER, KICKING (main hero, bright gold) ═══ -->
+<g stroke="url(#gMain)" stroke-linecap="round" stroke-linejoin="round" fill="url(#gMain)" filter="url(#fg)">
+  <!-- Head (large) -->
+  <circle cx="348" cy="155" r="32" stroke="none"/>
+  <!-- Ponytail (flowing to the right, she is kicking toward left) -->
+  <path d="M 362,142 C 382,132 408,128 424,134 C 440,140 440,156 425,160 C 408,164 382,158 362,145 Z" stroke="none"/>
+  <path d="M 424,134 C 445,125 465,128 472,138 C 478,148 470,158 455,158 C 440,158 428,152 424,134 Z" stroke="none"/>
+  <!-- Neck -->
+  <line x1="348" y1="188" x2="348" y2="212" stroke-width="18"/>
+  <!-- Torso (upright with slight lean) -->
+  <line x1="348" y1="215" x2="352" y2="332" stroke-width="54"/>
+  <!-- RIGHT ARM (left of frame — swinging back for kick balance) -->
+  <polyline points="320,228 275,260 252,290" stroke-width="25" fill="none"/>
+  <!-- Right forearm to hand -->
+  <polyline points="252,290 235,318 228,338" stroke-width="20" fill="none"/>
+  <circle cx="226" cy="342" r="11" stroke="none"/>
+  <!-- LEFT ARM (right of frame — forward for balance) -->
+  <polyline points="378,228 422,205 452,190" stroke-width="25" fill="none"/>
+  <polyline points="452,190 472,178 485,170" stroke-width="20" fill="none"/>
+  <circle cx="488" cy="168" r="11" stroke="none"/>
+  <!-- PLANT LEG (left leg, going down, slightly bent) -->
+  <polyline points="336,335 326,408 332,462" stroke-width="30" fill="none"/>
+  <!-- Plant shin -->
+  <line x1="332" y1="462" x2="340" y2="472" stroke-width="25"/>
+  <!-- Plant foot -->
+  <ellipse cx="318" cy="474" rx="30" ry="12" transform="rotate(-10,318,474)" stroke="none"/>
+  <!-- KICKING LEG (right leg — raised, extended back for windup OR forward for follow-through) -->
+  <!-- I'll do follow-through: leg swinging forward and upward -->
+  <polyline points="368,335 428,295 478,272" stroke-width="30" fill="none"/>
+  <!-- Kicking shin (bent at knee, foot going down-forward) -->
+  <polyline points="478,272 510,298 518,335" stroke-width="26" fill="none"/>
+  <!-- Kicking foot (pointing at ball) -->
+  <ellipse cx="510" cy="342" rx="28" ry="12" transform="rotate(30,510,342)" stroke="none"/>
+  <!-- Jersey number hint (subtle) -->
+  <text x="348" y="292" text-anchor="middle" font-family="'Bebas Neue',sans-serif" font-size="20" fill="#0a0a14" fill-opacity="0.5" stroke="none">10</text>
+</g>
+
+<!-- Motion lines (subtle) -->
+<g stroke="rgba(245,200,66,0.15)" stroke-width="1.5" stroke-linecap="round" fill="none">
+  <line x1="524" y1="340" x2="560" y2="345"/>
+  <line x1="530" y1="355" x2="562" y2="357"/>
+  <line x1="522" y1="368" x2="554" y2="368"/>
+</g>
+
+<!-- Sparkle dots (dynamic effect) -->
+<g fill="#f5c842">
+  <circle cx="220" cy="195" r="2.5" fill-opacity="0.5"/>
+  <circle cx="280" cy="140" r="1.8" fill-opacity="0.35"/>
+  <circle cx="490" cy="148" r="2" fill-opacity="0.4"/>
+  <circle cx="560" cy="162" r="1.5" fill-opacity="0.3"/>
+  <circle cx="190" cy="230" r="1.5" fill-opacity="0.25"/>
+  <circle cx="625" cy="240" r="2" fill-opacity="0.35"/>
+</g>
+</svg>

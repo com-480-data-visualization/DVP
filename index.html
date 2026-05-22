@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyond the Pitch — Women's Football Data Story</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@200;300;400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Data bundle (inlined so no server required) -->
+    <script src="data/bundle.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/topojson.v3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loader">
+    <div class="loader-inner">
+        <div class="loader-ball"></div>
+        <div class="loader-text">BEYOND THE PITCH</div>
+        <div class="loader-sub">Loading 70 years of history…</div>
+        <div class="loader-bar"><div class="loader-fill" id="loader-fill"></div></div>
+    </div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div id="scroll-progress-bar"></div>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- NAVIGATION -->
+<nav id="main-nav">
+    <div class="nav-brand">
+        <span class="nav-logo">⚽</span>
+        <span class="nav-title">Beyond the Pitch</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#history">History</a></li>
+        <li><a href="#race">The Race</a></li>
+        <li><a href="#worldmap">World Map</a></li>
+        <li><a href="#rivalries">Rivalries</a></li>
+        <li><a href="#dominance">Dominance</a></li>
+        <li><a href="#economics">Economics</a></li>
+        <li><a href="#legends">Legends</a></li>
+        <li><a href="#patterns">Patterns</a></li>
+        <li><a href="#explorer">Compare</a></li>
+    </ul>
+    <div class="nav-chapter-indicator"><span id="nav-chapter-text">Introduction</span></div>
+</nav>
+
+<!-- ANIMATED BACKGROUND -->
+<canvas id="bg-canvas"></canvas>
+
+<div class="content-wrapper">
+
+<!-- ═══════════ HERO ═══════════ -->
+<section id="hero" class="section-hero">
+    <div class="hero-content">
+        <div class="hero-eyebrow">EPFL COM-480 · Data Visualization · 2025</div>
+        <div class="hero-title-block">
+            <div class="ht-beyond">BEYOND</div>
+            <div class="ht-the">THE</div>
+            <div class="ht-pitch">PITCH</div>
+        </div>
+        <p class="hero-tagline">From Banned to Global — The Data Story of Women's Football</p>
+        <p class="hero-desc">In 1921, England banned women from football. In 2023, 2 billion watched the World Cup. This is everything that happened in between — told through 11,177 matches, 2,795 goals, and 70 years of data.</p>
+        <div class="hero-cta-row">
+            <button class="btn-primary" onclick="document.getElementById('history').scrollIntoView({behavior:'smooth'})">
+                Start the Story ↓
+            </button>
+        </div>
+    </div>
+    <div class="hero-visual">
+        <div class="hero-collage">
+            <div class="hc-card hc-1">
+                <img src="img_hero1.jpg" alt="" loading="lazy">
+                <div class="hc-shimmer"></div>
+            </div>
+            <div class="hc-card hc-2">
+                <img src="img_hero2.webp" alt="" loading="lazy">
+                <div class="hc-shimmer"></div>
+            </div>
+            <div class="hc-card hc-3">
+                <img src="img_hero3.avif" alt="" loading="lazy">
+                <div class="hc-shimmer"></div>
+            </div>
+            <div class="hc-card hc-4">
+                <img src="img_hero4.jpg" alt="" loading="lazy">
+                <div class="hc-shimmer"></div>
+            </div>
+            <!-- diagonal accent lines -->
+            <div class="hc-lines" aria-hidden="true">
+                <svg viewBox="0 0 600 480" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="0" y1="480" x2="600" y2="0" stroke="rgba(245,200,66,0.06)" stroke-width="80"/>
+                    <line x1="0" y1="380" x2="480" y2="0" stroke="rgba(245,200,66,0.04)" stroke-width="40"/>
+                    <line x1="120" y1="480" x2="600" y2="80" stroke="rgba(245,200,66,0.03)" stroke-width="30"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+    <div class="hero-stats-grid">
+        <div class="hstat"><div class="hstat-num" data-target="11177">0</div><div class="hstat-label">Matches</div><div class="hstat-period">1956–2025</div></div>
+        <div class="hstat"><div class="hstat-num" data-target="211">0</div><div class="hstat-label">FIFA Members</div><div class="hstat-period">238 in dataset</div></div>
+        <div class="hstat hstat-accent"><div class="hstat-num" data-prefix="$" data-target="110" data-suffix="M">$0M</div><div class="hstat-label">Prize Money 2023</div><div class="hstat-period">vs $0 in 1991–2011</div></div>
+        <div class="hstat"><div class="hstat-num" data-target="2" data-suffix="B">0B</div><div class="hstat-label">TV Viewers</div><div class="hstat-period">2023 World Cup</div></div>
+        <div class="hstat"><div class="hstat-num" data-target="2795">0</div><div class="hstat-label">Goals in Dataset</div><div class="hstat-period">~75% coverage</div></div>
+        <div class="hstat hstat-warn"><div class="hstat-num" data-target="50" data-suffix=" yrs">0</div><div class="hstat-label">Years Banned</div><div class="hstat-period">England 1921–1971</div></div>
+    </div>
+    <div class="hero-scroll-hint"><div class="scroll-hint-line"></div><span>SCROLL</span><div class="scroll-hint-line"></div></div>
+</section>
+
+<!-- ═══════════ CHAPTER 1: HISTORY ═══════════ -->
+<section id="history" class="story-section">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 01</div>
+        <h2 class="section-title">When <em>Football</em><br>Was Forbidden</h2>
+        <p class="section-lede">December 1921. England's FA declared women's football "quite unsuitable for females." The ban lasted <strong>50 years</strong>. What happened next surprised everyone.</p>
+        <div class="two-col">
+            <div class="col-text">
+                <div class="timeline-events">
+                    <div class="tevent" data-year="1921">
+                        <div class="tevent-year">1921</div><div class="tevent-dot"></div>
+                        <div class="tevent-body"><strong>The Ban Begins</strong><p>England's FA bans women from affiliated grounds, calling football "quite unsuitable for females." Germany follows.</p></div>
+                    </div>
+                    <div class="tevent" data-year="1970">
+                        <div class="tevent-year">1970</div><div class="tevent-dot"></div>
+                        <div class="tevent-body"><strong>First Unofficial WC</strong><p>Italy hosts an unofficial women's World Cup. Denmark win. FIFA refuses to sanction it.</p></div>
+                    </div>
+                    <div class="tevent" data-year="1971">
+                        <div class="tevent-year">1971</div><div class="tevent-dot"></div>
+                        <div class="tevent-body"><strong>The Ban Lifts</strong><p>After 50 years of resistance, England reverses the ban. Germany had lifted it the year before.</p></div>
+                    </div>
+                    <div class="tevent featured" data-year="1991">
+                        <div class="tevent-year">1991</div><div class="tevent-dot"></div>
+                        <div class="tevent-body"><strong>FIFA's First Women's World Cup</strong><p>12 nations. Guangzhou, China. The USA win. Prize money: <strong>$0</strong>.</p></div>
+                    </div>
+                    <div class="tevent featured" data-year="1999">
+                        <div class="tevent-year">1999</div><div class="tevent-dot"></div>
+                        <div class="tevent-body"><strong>Rose Bowl Moment</strong><p>90,185 fans fill the Rose Bowl for the USA vs China final. A world record for women's sport.</p></div>
+                    </div>
+                    <div class="tevent gold" data-year="2023">
+                        <div class="tevent-year">2023</div><div class="tevent-dot"></div>
+                        <div class="tevent-body"><strong>Revolution Complete</strong><p>32 nations. 2 billion viewers. $110M prize money. 1.98M in attendance.</p></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-viz">
+                <div class="viz-title">Nations entering women's football (1956–2025)</div>
+                <div id="timeline-growth" class="viz-box"></div>
+            </div>
+        </div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>Fifty years is a long time to wait. What moves me most in this data is not the ban itself — it's what happened after it lifted. The chart just keeps climbing.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CHAPTER 2: RACE ═══════════ -->
+<section id="race" class="story-section alt">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 02</div>
+        <h2 class="section-title">The <em>Race</em> for Dominance</h2>
+        <p class="section-lede">Watch the top 15 nations accumulate wins from 1956 to 2025. Press play to witness seven decades of shifting power — Germany's early supremacy, America's total dominance, and the rising challengers.</p>
+        <div class="race-controls">
+            <button id="race-play-btn" class="btn-control" onclick="toggleRace()">
+                <span id="race-btn-label">▶ Play</span>
+            </button>
+            <button class="btn-control-ghost" onclick="resetRace()">↺ Reset</button>
+            <div class="race-year-display"><span class="race-year-num" id="race-year">1956</span></div>
+            <div class="race-speed-ctrl">
+                <label>Speed</label>
+                <input type="range" id="race-speed" min="1" max="5" value="3" step="1">
+            </div>
+        </div>
+        <div id="race-chart" class="viz-box race-viz"></div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>Germany pioneered. The USA dominated from 1985. But by 2023, Japan, Sweden and Australia are closing in — the bars tell the whole story.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CHAPTER 3: WORLD MAP ═══════════ -->
+<section id="worldmap" class="story-section">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 03</div>
+        <h2 class="section-title">The World <em>Wakes Up</em></h2>
+        <p class="section-lede">Watch 238 nations light up across 70 years. Every country that entered women's international football — including 27 historical and non-FIFA regional entities that played real recorded matches.</p>
+        <div class="map-controls-row">
+            <button id="map-play-btn" class="btn-control" onclick="toggleMapAnimation()">▶ Play</button>
+            <div class="map-slider-wrap">
+                <span class="map-year-badge" id="map-year-label">1991</span>
+                <input id="map-year-slider" type="range" min="1956" max="2025" step="1" value="1991" oninput="updateMapYear(this.value)">
+            </div>
+            <div class="map-live-count"><span id="map-team-count">0</span> nations</div>
+        </div>
+        <div id="world-map" class="viz-box map-viz-box"></div>
+        <div class="map-legend-row">
+            <div class="mleg-item"><span class="mleg-dot new"></span> First appearance</div>
+            <div class="mleg-item"><span class="mleg-dot active"></span> Active nation</div>
+            <div class="mleg-item"><span class="mleg-dot none"></span> Not yet / no data</div>
+            <div id="map-hover-info" class="map-hover-info">Click a nation to cross-filter charts</div>
+        </div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>The 1991 World Cup was a trigger. Before it: a handful of European nations. After it: a cascade across every continent within a decade.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CHAPTER 4: RIVALRIES ═══════════ -->
+<section id="rivalries" class="story-section alt">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 04</div>
+        <h2 class="section-title">The Web of <em>Rivalries</em></h2>
+        <p class="section-lede">Every arc represents matches played between the world's top 10 nations. Arc thickness encodes victories. Hover any arc or node to isolate a rivalry.</p>
+        <div id="chord-chart" class="viz-box chord-viz-box"></div>
+        <div class="chord-legend-row" id="chord-legend"></div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>USA vs Germany: 16 wins to 2. But those German victories came in crucial moments — the chord diagram shows where power concentrated and where cracks appeared.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CHAPTER 5: DOMINANCE ═══════════ -->
+<section id="dominance" class="story-section">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 05</div>
+        <h2 class="section-title">Shifting <em>Power</em></h2>
+        <p class="section-lede">Six confederations, seven decades. This streamgraph shows the rising and falling tides of continental dominance — measured in victories per year.</p>
+        <div id="stream-chart" class="viz-box stream-viz-box"></div>
+        <div class="stream-legend" id="stream-legend"></div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>Europe built the foundations. CONCACAF seized control. Asia's teal is growing. The game didn't just expand geographically — it redistributed power entirely.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CHAPTER 6: ECONOMICS ═══════════ -->
+<section id="economics" class="story-section alt">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 06</div>
+        <h2 class="section-title">The Price of <em>Equality</em></h2>
+        <p class="section-lede">For 24 years — four World Cups — women played for zero dollars. The men's prize pot grew from $110M to $1 billion in the same period.</p>
+        <div id="economics-chart" class="viz-box econ-viz-box"></div>
+        <div class="econ-stats-row">
+            <div class="estat"><div class="estat-num">$0</div><div class="estat-label">Women's WC prize money 1991–2011</div></div>
+            <div class="estat accent"><div class="estat-num">89%</div><div class="estat-label">Prize gap remaining in 2023</div></div>
+            <div class="estat"><div class="estat-num">74%</div><div class="estat-label">Attendance growth 2019→2023</div></div>
+            <div class="estat"><div class="estat-num">1.98M</div><div class="estat-label">In-person spectators 2023</div></div>
+        </div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>$0 for 24 years. The 1999 Rose Bowl drew 90,185 people. The fans were never the problem. The investment just needed to catch up.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CHAPTER 7: LEGENDS ═══════════ -->
+<section id="legends" class="story-section">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 07</div>
+        <h2 class="section-title">The <em>Legends</em></h2>
+        <p class="section-lede">Over 2,795 recorded goals from 1,055 unique scorers. Each circle is a player — size reflects goals. Hover to reveal their story.</p>
+        <div id="bubble-chart" class="viz-box bubble-viz-box"></div>
+        <div class="legends-podium">
+            <!-- Decorative ball + podium stage -->
+            <div class="pod-scene">
+                <!-- Stats column beside podium -->
+                <div class="pod-stats-col">
+                    <div class="pod-stat-item">
+                        <div class="pod-stat-num">1,055</div>
+                        <div class="pod-stat-label">Unique<br>Scorers</div>
+                    </div>
+                    <div class="pod-stat-divider"></div>
+                    <div class="pod-stat-item">
+                        <div class="pod-stat-num" style="color:var(--rose)">14</div>
+                        <div class="pod-stat-label">Years<br>Top Career</div>
+                    </div>
+                    <div class="pod-stat-divider"></div>
+                    <div class="pod-stat-item">
+                        <div class="pod-stat-num" style="color:var(--teal)">6×</div>
+                        <div class="pod-stat-label">Marta FIFA<br>Best Player</div>
+                    </div>
+                    <div class="pod-stat-divider"></div>
+                    <div class="pod-stat-item">
+                        <svg class="pod-mini-ball" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <radialGradient id="mbg" cx="35%" cy="30%" r="60%">
+                                    <stop offset="0%" stop-color="#1e1e30"/>
+                                    <stop offset="100%" stop-color="#07070f"/>
+                                </radialGradient>
+                            </defs>
+                            <circle cx="40" cy="40" r="36" fill="url(#mbg)" stroke="#f5c842" stroke-width="1.2" stroke-opacity="0.5"/>
+                            <polygon points="40,14 48,21 45,31 35,31 32,21" fill="rgba(245,200,66,0.25)" stroke="#f5c842" stroke-width="1" stroke-opacity="0.6"/>
+                            <polygon points="22,28 31,24 35,31 30,39 20,37" fill="rgba(245,200,66,0.18)" stroke="#f5c842" stroke-width="0.8" stroke-opacity="0.45"/>
+                            <polygon points="58,28 67,36 62,44 52,42 50,31" fill="rgba(245,200,66,0.18)" stroke="#f5c842" stroke-width="0.8" stroke-opacity="0.4"/>
+                            <polygon points="25,50 31,42 40,45 40,55 30,58" fill="rgba(245,200,66,0.15)" stroke="#f5c842" stroke-width="0.8" stroke-opacity="0.4"/>
+                            <polygon points="55,50 65,52 63,62 55,65 48,57" fill="rgba(245,200,66,0.15)" stroke="#f5c842" stroke-width="0.8" stroke-opacity="0.35"/>
+                            <circle cx="30" cy="25" r="5" fill="rgba(255,255,255,0.05)"/>
+                        </svg>
+                        <div class="pod-stat-label" style="margin-top:6px">~75% matches<br>with goal data</div>
+                    </div>
+                </div>
+                <!-- Three player silhouettes on podium steps -->
+                <div class="pod-players">
+                    <div class="pod-player pod-silver">
+                        <div class="pod-photo-frame">
+                            <img src="img_prinz.webp" alt="Birgit Prinz" loading="lazy">
+                            <div class="pod-photo-glow gold-glow"></div>
+                        </div>
+                        <div class="pod-medal-badge" style="background:linear-gradient(135deg,#f5c842,#e8a828)">🥇</div>
+                        <div class="pod-step pod-step-1">
+                            <div class="pod-step-num">#1</div>
+                            <div class="pod-step-name">Birgit Prinz</div>
+                            <div class="pod-step-goals"><span>34</span> goals</div>
+                            <div class="pod-step-years">1995 – 2009</div>
+                        </div>
+                    </div>
+                    <div class="pod-player pod-gold pod-center">
+                        <div class="pod-photo-frame">
+                            <img src="img_marta.jpg" alt="Marta" loading="lazy">
+                            <div class="pod-photo-glow silver-glow"></div>
+                        </div>
+                        <div class="pod-medal-badge" style="background:linear-gradient(135deg,#c0c0d0,#909090)">🥈</div>
+                        <div class="pod-step pod-step-2">
+                            <div class="pod-step-num">#2</div>
+                            <div class="pod-step-name">Marta</div>
+                            <div class="pod-step-goals"><span>24</span> goals</div>
+                            <div class="pod-step-years">2002 – 2024</div>
+                        </div>
+                    </div>
+                    <div class="pod-player pod-bronze">
+                        <div class="pod-photo-frame">
+                            <img src="img_wambach.jpg" alt="Abby Wambach" loading="lazy">
+                            <div class="pod-photo-glow bronze-glow"></div>
+                        </div>
+                        <div class="pod-medal-badge" style="background:linear-gradient(135deg,#cd7f32,#a0522d)">🥉</div>
+                        <div class="pod-step pod-step-3">
+                            <div class="pod-step-num">#3</div>
+                            <div class="pod-step-name">Abby Wambach</div>
+                            <div class="pod-step-goals"><span>23</span> goals</div>
+                            <div class="pod-step-years">2001 – 2015</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>Birgit Prinz scored those 34 goals without prize money, without prime-time TV. What we know for certain is these women played for the love of the game.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CHAPTER 8: PATTERNS ═══════════ -->
+<section id="patterns" class="story-section alt">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 08</div>
+        <h2 class="section-title">When Goals <em>Happen</em></h2>
+        <p class="section-lede">Patterns hidden in 2,795 goals. The radial clock shows every 5-minute window — the 45th and 85th minutes spike universally, identical to men's football.</p>
+        <div class="two-col equal-viz">
+            <div>
+                <div class="viz-title">Goals by minute — radial clock (0 → 90+)</div>
+                <div id="radial-chart" class="viz-box radial-viz-box"></div>
+            </div>
+            <div>
+                <div class="viz-title">Match volume &amp; data coverage by year</div>
+                <div id="activity-chart" class="viz-box activity-viz-box"></div>
+                <div class="pattern-stats-row">
+                    <div class="pstat"><div class="pstat-num">53.6%</div><div class="pstat-label">Goals after half-time</div></div>
+                    <div class="pstat"><div class="pstat-num">7.6%</div><div class="pstat-label">Penalty goals</div></div>
+                    <div class="pstat"><div class="pstat-num">60.5%</div><div class="pstat-label">First shootout kicker wins</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>Goals cluster at the 45th and 85th minutes — identical to men's football. Match pressure dynamics are universal. The biology of competition doesn't change with gender.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CHAPTER 9: NATIONS ═══════════ -->
+<section id="nations" class="story-section">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 09</div>
+        <h2 class="section-title">Win Rate vs. <em>Experience</em></h2>
+        <p class="section-lede">Each bubble is a nation — size reflects total goals scored, colour reflects confederation. Teams in the top-right quadrant combine high win rates with long history. Hover any bubble to explore.</p>
+        <div id="scatter-chart" class="viz-box scatter-viz-box"></div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>Europe built the foundations. The USA dominated for three decades. But Japan won 2011, Nigeria leads Africa, and Australia co-hosted 2023. The next generation hasn't been born yet.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════ CHAPTER 10: EXPLORER ═══════════ -->
+<section id="explorer" class="story-section alt">
+    <div class="section-container">
+        <div class="chapter-label">Chapter 10</div>
+        <h2 class="section-title">Head-to-Head <em>Explorer</em></h2>
+        <p class="section-lede">Pick two nations. The radar chart normalises five dimensions against all teams so you see relative strength. Every number invites more questions than it answers.</p>
+        <div class="explorer-ui">
+            <div class="explorer-selects">
+                <div class="select-group"><label>Nation 1</label><select id="team1-select" onchange="updateComparison()"><option value="">— Choose —</option></select></div>
+                <div class="vs-divider-text">VS</div>
+                <div class="select-group"><label>Nation 2</label><select id="team2-select" onchange="updateComparison()"><option value="">— Choose —</option></select></div>
+            </div>
+            <div id="comparison-result" class="comparison-area"><div class="comparison-placeholder">Select two nations above to begin</div></div>
+        </div>
+        <div class="narrator-quote fade-up">
+            <div class="nq-mark">"</div>
+            <div><blockquote>USA vs Germany: 16 wins to 2. While the USA dominates in raw numbers, Germany's win rate and goals per match tell a different story about efficiency.</blockquote></div>
+        </div>
+    </div>
+</section>
+
+
+</div><!-- end content-wrapper -->
+<div id="cf-badge" style="display:none;position:fixed;top:72px;left:50%;transform:translateX(-50%);
+     background:rgba(245,200,66,0.95);color:#05050a;padding:7px 18px;border-radius:20px;
+     font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.08em;
+     text-transform:uppercase;z-index:2000;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4);
+     align-items:center;gap:8px;white-space:nowrap;"></div>
+<div id="tooltip" class="global-tooltip"></div>
+
+<script src="js/mapfix.js"></script>
+<script src="js/crossfilter.js"></script>
+<script src="js/background.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/interactions.js"></script>
+
+
+</html>
+
+<!-- ═══════════════ STORYTELLING GUIDE ═══════════════ -->
+<button id="chat-fab" onclick="toggleChat()" aria-label="Story Guide">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="fab-label">Story Guide</span>
+    <span class="fab-pulse"></span>
+</button>
+
+<div id="chat-panel" class="chat-panel">
+    <div class="chat-header">
+        <div class="chat-header-left">
+            <div class="chat-avatar">⚽</div>
+            <div>
+                <div class="chat-title">Data Story Guide</div>
+                <div class="chat-subtitle">Explore 70 years of women's football</div>
+            </div>
+        </div>
+        <button class="chat-close" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="chat-msg assistant">
+            <div class="chat-bubble">
+                👋 Welcome to <strong>Beyond the Pitch</strong> — the data story of women's international football.<br><br>
+                What would you like to explore?
+                <span class="chat-suggestion" onclick="storyReply('ban')">⛔ The 50-year ban</span>
+                <span class="chat-suggestion" onclick="storyReply('usa')">🇺🇸 USA's dominance</span>
+                <span class="chat-suggestion" onclick="storyReply('prize')">💰 Prize money gap</span>
+                <span class="chat-suggestion" onclick="storyReply('legends')">🌟 Greatest players</span>
+                <span class="chat-suggestion" onclick="storyReply('growth')">📈 How the game grew</span>
+                <span class="chat-suggestion" onclick="storyReply('wc')">🏆 World Cup history</span>
+                <span class="chat-suggestion" onclick="storyReply('goals')">⚽ Goal patterns</span>
+                <span class="chat-suggestion" onclick="storyReply('rivals')">🔥 Greatest rivalries</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var chatOpen = false;
+
+var STORIES = {
+  ban: {
+    text: "⛔ <strong>The 50-Year Ban</strong><br><br>In December 1921, England's Football Association banned women from playing on affiliated grounds, calling it <em>"quite unsuitable for females."</em> Germany followed suit.<br><br>The ban lasted <strong>50 years</strong> — lifted in 1971. But the damage wasn't permanent. Within a decade of the ban lifting, the number of participating nations began climbing. The chart in Chapter 1 shows it: once barriers fall, football fills the space immediately.",
+    link: 'history',
+    linkLabel: '→ See Chapter 1: History'
+  },
+  usa: {
+    text: "🇺🇸 <strong>USA's Total Dominance</strong><br><br>Since their debut in 1985, the United States have won <strong>465 matches</strong> — more than any nation on Earth. Their win rate stands at <strong>78.8%</strong> across 590 games.<br><br>Against Germany — their fiercest rival — they hold a 16–2 record. Against Japan, 30–2. Against Brazil, 23–4.<br><br>But the Race chart (Chapter 2) tells the real story: they started late, went fast, and never looked back.",
+    link: 'race',
+    linkLabel: '→ Watch the Bar Chart Race'
+  },
+  prize: {
+    text: "💰 <strong>The Price of Equality</strong><br><br>From 1991 to 2011 — four entire World Cups — women played for <strong>$0</strong> in prize money. Zero.<br><br>Meanwhile the men's pot grew from $110M to $420M. The 1999 Rose Bowl drew 90,185 fans. The 2003 Women's WC had nearly 680,000 in attendance. The gap was never about audience interest.<br><br>By 2023: women received $110M. Men received $1 billion. The gap is closing — from 100% to 89% — but it's still an 89% gap.",
+    link: 'economics',
+    linkLabel: '→ See the Economics chart'
+  },
+  legends: {
+    text: "🌟 <strong>The Legends</strong><br><br><strong>Birgit Prinz</strong> (Germany) leads with 34 recorded goals — scored across 1995–2009, a 14-year career, without prize money or primetime coverage.<br><br><strong>Marta</strong> (Brazil) won FIFA's Best Women's Player 6 times. <strong>Abby Wambach</strong> scored the equaliser in the 122nd minute of the 2011 WC quarter-final vs Brazil. <strong>Christine Sinclair</strong> (Canada) played at 5 World Cups.<br><br>Note: goalscorer records cover ~75% of matches — some careers may be underrepresented.",
+    link: 'legends',
+    linkLabel: '→ Explore the Bubble Chart'
+  },
+  growth: {
+    text: "📈 <strong>How the Game Grew</strong><br><br>In 1956, only 2 nations played women's international football: Germany and the Netherlands. By 1991 (the first World Cup), that number had reached around 60. By 2025: <strong>238 nations</strong>.<br><br>The map animation (Chapter 3) shows every nation lighting up. The cascade began after 1991 and hasn't stopped. Africa, Asia, and Oceania all joined within a single decade. The world didn't wait for permission.",
+    link: 'worldmap',
+    linkLabel: '→ Watch the World Map animate'
+  },
+  wc: {
+    text: "🏆 <strong>World Cup History</strong><br><br><strong>1991</strong> — China, 12 teams, USA wins, prize money: $0<br><strong>1999</strong> — USA, 16 teams, USA wins, Rose Bowl record: 90,185 fans<br><strong>2007</strong> — Germany wins by 6–0 final vs Brazil<br><strong>2011</strong> — Japan become first Asian nation to win<br><strong>2015 & 2019</strong> — USA win again<br><strong>2023</strong> — Australia/NZ, 32 teams, Spain wins, 2 billion viewers, $110M prize<br><br>Eight editions. Five different winners. The story keeps evolving.",
+    link: 'history',
+    linkLabel: '→ See the full timeline'
+  },
+  goals: {
+    text: "⚽ <strong>When Goals Happen</strong><br><br>Out of 2,795 recorded goals, <strong>53.6%</strong> were scored in the second half. The 45th and 85th+ minutes show the sharpest spikes — identical to the pattern in men's football.<br><br>This is universal: as a match approaches its natural end (or half-time), pressure creates goals. The biology of competition doesn't change with gender. The radial clock in Chapter 8 makes this pattern impossible to miss.",
+    link: 'patterns',
+    linkLabel: '→ See the Radial Goals Clock'
+  },
+  rivals: {
+    text: "🔥 <strong>The Greatest Rivalries</strong><br><br>The chord diagram (Chapter 4) maps every victory between the top 10 nations.<br><br><strong>USA vs Germany</strong>: 16–2 to the Americans — but Germany's wins came in crucial moments, including the 2003 semi-final.<br><strong>Sweden vs Denmark</strong>: 28–12 — the most-played Nordic rivalry (48 matches).<br><strong>China PR vs Japan</strong>: Asia's defining clash, 14–17 — Japan leads in head-to-head.<br><strong>Norway vs Denmark</strong>: 38 matches played, the highest between any two nations in this dataset.",
+    link: 'rivalries',
+    linkLabel: '→ Explore the Chord Diagram'
+  },
+  default: {
+    text: "I can tell you stories about:<br><br>• The <strong>50-year ban</strong> on women's football<br>• <strong>USA's dominance</strong> — 465 wins, 78.8% win rate<br>• The <strong>prize money gap</strong> — $0 for 24 years<br>• The <strong>greatest players</strong> — Prinz, Marta, Wambach<br>• <strong>World Cup history</strong> across 8 editions<br>• <strong>Goal timing patterns</strong> — identical to men's football<br>• The <strong>greatest rivalries</strong><br><br>Try one of the buttons above or type a keyword!",
+    link: null
+  }
+};
+
+function toggleChat() {
+    chatOpen = !chatOpen;
+    var panel = document.getElementById('chat-panel');
+    var fab   = document.getElementById('chat-fab');
+    panel.classList.toggle('open', chatOpen);
+    fab.classList.toggle('active', chatOpen);
+    if (chatOpen) setTimeout(function(){ document.getElementById('chat-input').focus(); }, 200);
+}
+
+function storyReply(key) {
+    var story = STORIES[key] || STORIES.default;
+    appendMsg('assistant', story.text, story.link, story.linkLabel);
+}
+
+function handleChatInput() {
+    var input = document.getElementById('chat-input');
+    var q = input.value.trim().toLowerCase();
+    if (!q) return;
+    appendMsg('user', input.value.trim(), null, null);
+    input.value = '';
+
+    var key = 'default';
+    if (q.match(/ban|forbid|1921|illegal|unsuitable/)) key = 'ban';
+    else if (q.match(/usa|united states|america|dominant|dominan/)) key = 'usa';
+    else if (q.match(/prize|money|pay|wage|equal|salary|earn/)) key = 'prize';
+    else if (q.match(/legend|player|best|greatest|prinz|marta|wambach|sinclair|scorer/)) key = 'legends';
+    else if (q.match(/grow|expansion|nation|country|world|map|spread/)) key = 'growth';
+    else if (q.match(/world cup|wc|tournament|champion/)) key = 'wc';
+    else if (q.match(/goal|minute|clock|timing|when|second half/)) key = 'goals';
+    else if (q.match(/rival|vs|versus|head.to.head|chord|germany|japan/)) key = 'rivals';
+
+    setTimeout(function(){ storyReply(key); }, 350);
+}
+
+function appendMsg(role, html, link, linkLabel) {
+    var msgs = document.getElementById('chat-messages');
+    var div  = document.createElement('div');
+    div.className = 'chat-msg ' + role;
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-bubble';
+    if (role === 'user') {
+        bubble.textContent = html;
+    } else {
+        bubble.innerHTML = html;
+        if (link) {
+            var a = document.createElement('a');
+            a.href = '#' + link;
+            a.className = 'chat-nav-link';
+            a.textContent = linkLabel;
+            a.onclick = function(){ toggleChat(); };
+            bubble.appendChild(document.createElement('br'));
+            bubble.appendChild(a);
+        }
+    }
+    div.appendChild(bubble);
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+</script>
+</body>
+
+<!-- STORY GUIDE BUTTON -->
+<button id="chat-fab" onclick="toggleChat()">
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span>Story Guide</span>
+    <span class="fab-pulse"></span>
+</button>
+
+<div id="chat-panel" class="chat-panel">
+    <div class="chat-header">
+        <div class="chat-header-left">
+            <div class="chat-avatar">&#9917;</div>
+            <div>
+                <div class="chat-title">Data Story Guide</div>
+                <div class="chat-subtitle">Explore 70 years of data</div>
+            </div>
+        </div>
+        <button class="chat-close" onclick="toggleChat()">&#10005;</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="chat-msg assistant">
+            <div class="chat-bubble">
+                Welcome to <b>Beyond the Pitch</b>. What story would you like to explore?
+                <span class="chat-suggestion" onclick="storyReply('ban')">The 50-year ban</span>
+                <span class="chat-suggestion" onclick="storyReply('usa')">USA dominance</span>
+                <span class="chat-suggestion" onclick="storyReply('prize')">Prize money gap</span>
+                <span class="chat-suggestion" onclick="storyReply('legends')">Greatest players</span>
+                <span class="chat-suggestion" onclick="storyReply('growth')">How the game grew</span>
+                <span class="chat-suggestion" onclick="storyReply('wc')">World Cup history</span>
+                <span class="chat-suggestion" onclick="storyReply('goals')">Goal patterns</span>
+                <span class="chat-suggestion" onclick="storyReply('rivals')">Greatest rivalries</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    var chatOpen = false;
+
+    var STORIES = {
+        ban: { text: "The 50-Year Ban: In December 1921, England banned women from playing on affiliated grounds, calling football unsuitable for females. The ban lasted 50 years and was lifted in 1971. Germany followed suit with their own ban. Once lifted, the number of participating nations climbed immediately and never stopped.", link: 'history' },
+        usa: { text: "USA Dominance: Since their debut in 1985, the United States have won 465 matches with a 78.8% win rate across 590 games. Against Germany they hold a 16-2 record. Against Japan, 30-2. They started late, went fast, and never looked back. Watch the Bar Chart Race in Chapter 2 to see it unfold.", link: 'race' },
+        prize: { text: "The Prize Money Gap: From 1991 to 2011, four entire World Cups, women played for $0 in prize money. The 1999 Rose Bowl drew 90,185 fans. By 2023 women received $110M, while men received $1 billion. The gap was never about audience interest.", link: 'economics' },
+        legends: { text: "The Legends: Birgit Prinz leads with 34 recorded goals across 1995-2009. Marta won FIFA Best Women Player 6 times. Abby Wambach scored the equaliser in the 122nd minute of the 2011 WC quarter-final. These women played for the love of the game.", link: 'legends' },
+        growth: { text: "How the Game Grew: In 1956 only 2 nations played. By 1991 around 60. By 2025: 238 nations. The cascade began after the first World Cup in 1991. Africa, Asia, and Oceania all joined within a single decade. Watch the World Map animate in Chapter 3.", link: 'worldmap' },
+        wc: { text: "World Cup History: 1991 - USA wins, $0 prize. 1999 - USA wins, Rose Bowl world record. 2007 - Germany wins 6-0. 2011 - Japan, first Asian winner. 2015 and 2019 - USA wins. 2023 - Spain wins, 2 billion viewers, $110M prize. Eight editions, five different winners.", link: 'history' },
+        goals: { text: "Goal Patterns: 53.6% of goals are scored in the second half. The 45th and 85th minutes show the sharpest spikes, identical to men football. This is universal: as a match approaches its end, pressure creates goals. The biology of competition does not change with gender.", link: 'patterns' },
+        rivals: { text: "Greatest Rivalries: USA vs Germany: 16-2. Sweden vs Denmark: 28-12 across 48 matches. China vs Japan: 14-17, Japan leads. Norway vs Denmark: 38 matches, the highest between any two nations in this dataset. See the Chord Diagram in Chapter 4.", link: 'rivalries' },
+        default: { text: "I can tell stories about the 50-year ban, USA dominance, prize money gap, greatest players, World Cup history, goal patterns, and greatest rivalries. Try one of the buttons above or type a keyword like 'ban', 'usa', 'money', 'marta', 'world cup', 'goals', or 'rivals'.", link: null }
+    };
+
+    window.toggleChat = function() {
+        chatOpen = !chatOpen;
+        var panel = document.getElementById('chat-panel');
+        var fab = document.getElementById('chat-fab');
+        if (panel) panel.classList.toggle('open', chatOpen);
+        if (fab) fab.classList.toggle('active', chatOpen);
+        if (chatOpen) {
+            setTimeout(function() {
+                var inp = document.getElementById('chat-input');
+                if (inp) inp.focus();
+            }, 250);
+        }
+    };
+
+    window.storyReply = function(key) {
+        var s = STORIES[key] || STORIES.default;
+        addMsg('assistant', s.text, s.link);
+    };
+
+    function handleInput() {
+        var inp = document.getElementById('chat-input');
+        var q = inp ? inp.value.trim() : '';
+        if (!q) return;
+        addMsg('user', q, null);
+        inp.value = '';
+        var ql = q.toLowerCase();
+        var key = 'default';
+        if (/ban|1921|forbid|illegal/.test(ql)) key = 'ban';
+        else if (/usa|united states|america|dominan/.test(ql)) key = 'usa';
+        else if (/prize|money|pay|wage|equal|salary/.test(ql)) key = 'prize';
+        else if (/legend|player|best|greatest|prinz|marta|wambach|sinclair|scorer/.test(ql)) key = 'legends';
+        else if (/grow|expansion|nation|country|spread|world/.test(ql)) key = 'growth';
+        else if (/world cup|wc|tournament|champion/.test(ql)) key = 'wc';
+        else if (/goal|minute|clock|timing|half/.test(ql)) key = 'goals';
+        else if (/rival|vs|versus|h2h|chord|germany|japan/.test(ql)) key = 'rivals';
+        setTimeout(function() { storyReply(key); }, 300);
+    }
+
+    function addMsg(role, text, link) {
+        var msgs = document.getElementById('chat-messages');
+        if (!msgs) return;
+        var div = document.createElement('div');
+        div.className = 'chat-msg ' + role;
+        var bubble = document.createElement('div');
+        bubble.className = 'chat-bubble';
+        bubble.textContent = text;
+        if (link) {
+            var a = document.createElement('span');
+            a.className = 'chat-nav-link';
+            a.textContent = 'Go to section';
+            a.onclick = function() {
+                var el = document.getElementById(link);
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+                toggleChat();
+            };
+            bubble.appendChild(document.createElement('br'));
+            bubble.appendChild(a);
+        }
+        div.appendChild(bubble);
+        msgs.appendChild(div);
+        msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var sendBtn = document.getElementById('chat-send-btn');
+        var inp = document.getElementById('chat-input');
+        // input removed - buttons only
+    });
+})();
+</script>
+</body>
