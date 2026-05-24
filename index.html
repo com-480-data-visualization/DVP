@@ -14,7 +14,7 @@
     <script src="https://d3js.org/topojson.v3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
-<body style="background-image:url('bg_pitch.jpg');background-size:cover;background-attachment:fixed;background-position:center center;">
+<body>
 
 <!-- LOADING SCREEN -->
 <div id="loader">
@@ -291,25 +291,7 @@
                         <div class="pod-stat-num" style="color:var(--teal)">6×</div>
                         <div class="pod-stat-label">Marta FIFA<br>Best Player</div>
                     </div>
-                    <div class="pod-stat-divider"></div>
-                    <div class="pod-stat-item">
-                        <svg class="pod-mini-ball" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <radialGradient id="mbg" cx="35%" cy="30%" r="60%">
-                                    <stop offset="0%" stop-color="#1e1e30"/>
-                                    <stop offset="100%" stop-color="#07070f"/>
-                                </radialGradient>
-                            </defs>
-                            <circle cx="40" cy="40" r="36" fill="url(#mbg)" stroke="#f5c842" stroke-width="1.2" stroke-opacity="0.5"/>
-                            <polygon points="40,14 48,21 45,31 35,31 32,21" fill="rgba(245,200,66,0.25)" stroke="#f5c842" stroke-width="1" stroke-opacity="0.6"/>
-                            <polygon points="22,28 31,24 35,31 30,39 20,37" fill="rgba(245,200,66,0.18)" stroke="#f5c842" stroke-width="0.8" stroke-opacity="0.45"/>
-                            <polygon points="58,28 67,36 62,44 52,42 50,31" fill="rgba(245,200,66,0.18)" stroke="#f5c842" stroke-width="0.8" stroke-opacity="0.4"/>
-                            <polygon points="25,50 31,42 40,45 40,55 30,58" fill="rgba(245,200,66,0.15)" stroke="#f5c842" stroke-width="0.8" stroke-opacity="0.4"/>
-                            <polygon points="55,50 65,52 63,62 55,65 48,57" fill="rgba(245,200,66,0.15)" stroke="#f5c842" stroke-width="0.8" stroke-opacity="0.35"/>
-                            <circle cx="30" cy="25" r="5" fill="rgba(255,255,255,0.05)"/>
-                        </svg>
-                        <div class="pod-stat-label" style="margin-top:6px">Matches<br>with data</div>
-                    </div>
+
                 </div>
                 <!-- Three player silhouettes on podium steps -->
                 <div class="pod-players">
@@ -707,7 +689,7 @@ function appendMsg(role, html, link, linkLabel) {
     document.addEventListener('DOMContentLoaded', function() {
         var sendBtn = document.getElementById('chat-send-btn');
         var inp = document.getElementById('chat-input');
-        // input removed - buttons only
+        
     });
 })();
 </script>

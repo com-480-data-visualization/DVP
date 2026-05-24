@@ -1569,105 +1569,145 @@ body {
     border-color: rgba(245,200,66,0.2) !important;
 }
 
-/* ════════════════════════════════════════════
-   READABILITY PASS — pitch background v15
-   Boost contrast for all text on green bg
-   ════════════════════════════════════════════ */
 
-/* ── Body base text brighter ── */
-body { color: #f5f5f0 !important; }
+/* ════════════════════════════════════════════════════════════
+   READABILITY OVERHAUL v2 — Full contrast fix for pitch bg
+   Every dark/muted color class is explicitly overridden here
+   ════════════════════════════════════════════════════════════ */
 
-/* ── Muted text: was #8888a8, now lighter ── */
-.section-lede,
-.hero-desc,
-.tevent-body p,
-.narrator-quote blockquote,
-.hpt-nat,
-.hstat-period,
-.map-legend-row,
-.mleg-item,
-.viz-title,
-.filter-label,
-.race-speed-ctrl label,
-.map-live-count,
-.stream-leg-item,
-.chord-leg-item,
-.credit-body,
-.epilogue-text,
-.hpt-label,
-.htv-desc,
-.htv-years,
-.pod-stat-label,
-.pod-step-years,
-.comp-stat-label,
-.h2h-label,
-.tt-sub {
-    color: #c8c8d8 !important;
+/* ── CSS variable overrides on root ─────────────────────── */
+:root {
+    --text-muted: #c8ccd8 !important;
+    --text-dim:   #a0a8b8 !important;
+    --text:       #f2f2f8 !important;
+    --border2:    rgba(255,255,255,0.12) !important;
 }
 
-/* ── Dim text: was #55557a, now readable ── */
-.text-dim, .hstat-period, .tevent-year,
-.chapter-label, .nav-chapter-indicator,
-.htv-year { color: #a0a8b8 !important; }
+/* ── Body ───────────────────────────────────────────────── */
+body { color: #f2f2f8 !important; }
 
-/* ── Nav links ── */
-.nav-links a { color: #c0c8d0 !important; }
-.nav-links a:hover, .nav-links a.active { color: var(--gold) !important; }
-.nav-title { color: var(--gold) !important; }
+/* ── Navigation ─────────────────────────────────────────── */
+.nav-links a              { color: #c8ccd8 !important; }
+.nav-links a:hover,
+.nav-links a.active       { color: var(--gold) !important; }
+.nav-chapter-indicator,
+#nav-chapter-text         { color: #a0a8b8 !important; }
 
-/* ── Axis labels in charts ── */
-.axis text { fill: #b8c0cc !important; }
-.grid line { stroke: rgba(255,255,255,0.08) !important; }
+/* ── Hero ───────────────────────────────────────────────── */
+.hero-eyebrow     { color: var(--gold) !important; }
+.hero-tagline     { color: var(--rose) !important; }
+.hero-desc        { color: #d8dce8 !important; text-shadow: 0 1px 8px rgba(0,0,0,0.8) !important; }
+.hstat-label      { color: #e8e8f0 !important; }
+.hstat-period     { color: #a8b0c0 !important; }
+.hstat-num        { text-shadow: 0 0 20px rgba(245,200,66,0.3) !important; }
 
-/* ── Timeline event body ── */
-.tevent-body strong { color: #f0f0f5 !important; }
-.tevent-year { color: var(--gold) !important; }
+/* ── Section titles & ledes ─────────────────────────────── */
+.section-title  { color: #ffffff !important; text-shadow: 0 2px 12px rgba(0,0,0,0.8) !important; }
+.section-lede   { color: #c8ccd8 !important; text-shadow: 0 1px 6px rgba(0,0,0,0.6) !important; }
+.chapter-label  { color: var(--gold) !important; }
 
-/* ── Hero stats ── */
-.hstat-label { color: #e8e8f0 !important; }
+/* ── Timeline ───────────────────────────────────────────── */
+.tevent-year          { color: var(--gold) !important; }
+.tevent.gold .tevent-year { color: var(--rose) !important; }
+.tevent-body strong   { color: #f0f0f5 !important; }
+.tevent-body p        { color: #c0c8d8 !important; }
 
-/* ── Section title brighter ── */
-.section-title { color: #ffffff !important; text-shadow: 0 2px 12px rgba(0,0,0,0.7) !important; }
-.section-lede  { color: #c8ccd8 !important; }
+/* ── Narrator quote ─────────────────────────────────────── */
+.narrator-quote           { border-left-color: var(--gold) !important; }
+.narrator-quote blockquote { color: #c8ccd8 !important; font-style: italic; }
 
-/* ── hpt card info ── */
-.hpt-name { color: #f0f0f5 !important; }
+/* ── Race chart ─────────────────────────────────────────── */
+.race-year-num      { color: var(--gold) !important; }
+.race-speed-ctrl    { color: #c0c8d0 !important; }
+.race-speed-ctrl label { color: #c0c8d0 !important; }
+
+/* ── Map ────────────────────────────────────────────────── */
+.map-year-badge  { color: var(--gold) !important; }
+.map-live-count  { color: var(--teal) !important; }
+.map-legend-row  { color: #c0c8d0 !important; }
+.mleg-item       { color: #c0c8d0 !important; }
+.map-hover-info  { color: #e0e4ec !important; }
+
+/* ── Chord legend ───────────────────────────────────────── */
+.chord-leg-item { color: #c0c8d0 !important; }
+
+/* ── Stream legend ──────────────────────────────────────── */
+.stream-leg-item { color: #c0c8d0 !important; }
+
+/* ── Economics ──────────────────────────────────────────── */
+.estat-label { color: #c0c8d0 !important; }
+.estat-num   { color: var(--gold) !important; }
+
+/* ── Player cards (hero triptych) ───────────────────────── */
+.hpt-name  { color: #f0f0f5 !important; }
+.hpt-nat   { color: #e0e4ec !important; }
 .hpt-title { color: var(--gold) !important; }
+.hpt-label { color: #a0a8b8 !important; }
+.hpt-goals-label { color: #a0a8b8 !important; }
 
-/* ── Podium step names ── */
-.pod-step-name { color: #f0f0f5 !important; }
-.pod-step-goals { color: var(--gold) !important; }
+/* ── Podium ─────────────────────────────────────────────── */
+.pod-step-num    { color: var(--gold) !important; }
+.pod-step-name   { color: #f0f0f5 !important; }
+.pod-step-years  { color: #a0a8b8 !important; }
+.pod-step-goals  { color: var(--gold) !important; }
+.pod-stat-num    { color: var(--gold) !important; }
+.pod-stat-label  { color: #c0c8d0 !important; }
 
-/* ── Narrator quote ── */
-.narrator-quote blockquote { color: #c8ccd8 !important; }
-.nq-mark { opacity: 0.4 !important; }
+/* ── Rankings ───────────────────────────────────────────── */
+.filter-label { color: #c0c8d0 !important; }
+.filt-btn     { color: #c0c8d0 !important; border-color: rgba(255,255,255,0.15) !important; }
+.filt-btn.active, .filt-btn:hover { color: var(--gold) !important; border-color: var(--gold) !important; }
 
-/* ── Chapter label ── */
-.chapter-label { color: var(--gold) !important; }
+/* ── Head-to-head Explorer ──────────────────────────────── */
+.select-group label { color: var(--gold) !important; }
+.select-group select { color: #f0f0f5 !important; background-color: rgba(5,22,5,0.95) !important; }
+.vs-divider-text    { color: var(--rose) !important; }
+.comparison-placeholder { color: #a0a8b8 !important; }
 
-/* ── Background preload: ensures image is displayed immediately ── */
-html {
-    background-color: #0d2a0d;
-    background-image: url('../bg_pitch.jpg');
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center center;
-}
+/* THE KEY FIX: comp-stat-label was near-invisible #55557a */
+.comp-stat-label         { color: #c8ccd8 !important; }
+.comp-stat-val           { color: var(--gold) !important; }
+.t1 .comp-stat-val       { color: var(--gold) !important; }
+.t2 .comp-stat-val       { color: var(--teal) !important; }
+.t2 .comp-stat-label     { color: #c8ccd8 !important; }
+.comp-team-header.t1     { color: var(--gold) !important; }
+.comp-team-header.t2     { color: var(--teal) !important; }
+.h2h-title  { color: #c0c8d0 !important; }
+.h2h-vs     { color: #a0a8b8 !important; }
+.h2h-label  { color: #a0a8b8 !important; }
+.h2h-big    { text-shadow: 0 0 20px rgba(0,0,0,0.5) !important; }
 
-/* ── Scatter labels: brighter on dark green ── */
-.scatter-labels text { fill: #e0e4ec !important; }
+/* ── Before/After hero viz ──────────────────────────────── */
+.htv-title  { color: #a0a8b8 !important; }
+.htv-year   { color: #a0a8b8 !important; }
+.htv-desc   { color: #c0c8d0 !important; }
+.htv-years  { color: rgba(245,200,66,0.55) !important; }
+.htv-val.htv-muted { color: #c0c8d0 !important; }
 
-/* ── Comparison area text ── */
-.comparison-placeholder { color: #8888a8 !important; }
-.h2h-title { color: #a0a8b8 !important; }
-.h2h-vs { color: #8888a8 !important; }
+/* ── Viz box titles ─────────────────────────────────────── */
+.viz-title { color: #c0c8d0 !important; }
 
-/* ── Filt buttons ── */
-.filt-btn { color: #a8b0c0 !important; border-color: rgba(255,255,255,0.12) !important; }
-.filt-btn.active, .filt-btn:hover { color: var(--gold) !important; }
+/* ── D3 axis labels ─────────────────────────────────────── */
+.axis text { fill: #b8c4d0 !important; }
+.axis .domain { stroke: rgba(255,255,255,0.15) !important; }
+.axis .tick line { stroke: rgba(255,255,255,0.1) !important; }
+.grid line { stroke: rgba(255,255,255,0.07) !important; }
 
-/* ── Race rank labels ── */
+/* ── Tooltip ────────────────────────────────────────────── */
+.global-tooltip { color: #f0f0f5 !important; background: rgba(3,14,3,0.97) !important; }
+.tt-sub { color: #a0a8b8 !important; }
 
+/* ── Chatbot ────────────────────────────────────────────── */
+.chat-subtitle     { color: #a0a8b8 !important; }
+.chat-msg.assistant .chat-bubble { color: #d0d4e0 !important; }
+.chat-suggestion   { color: #e0e4ec !important; }
 
-/* ── Tooltip ── */
-.global-tooltip { color: #f0f0f5 !important; }
+/* ── Pattern stats ──────────────────────────────────────── */
+.pstat-label { color: #c0c8d0 !important; }
+
+/* ── Race chart speed label ─────────────────────────────── */
+label[for="race-speed"] { color: #c0c8d0 !important; }
+
+/* ── Scatter plot labels (set via D3 fill attr, also override SVG) ── */
+#scatter-chart text { fill: #e0e4ec !important; }
+#scatter-chart .axis text { fill: #b8c4d0 !important; }
