@@ -501,9 +501,9 @@ function drawStreamgraph() {
     if (!el || !STREAM_DATA) return;
     el.innerHTML = '';
 
-    var M = {top:20,right:30,bottom:40,left:50};
+    var M = {top:24,right:30,bottom:44,left:58};
     var W = elW(el, 860) - M.left - M.right;
-    var H = 360 - M.top - M.bottom;
+    var H = 380 - M.top - M.bottom;
 
     var svg = d3.select(el).append('svg')
         .attr('width', W+M.left+M.right).attr('height', H+M.top+M.bottom).style('display','block');
@@ -511,16 +511,28 @@ function drawStreamgraph() {
 
     var regions = STREAM_DATA.regions;
     var data = STREAM_DATA.data;
-    var streamColors = {'Europe':'#4a90e2','CONCACAF':'#f5c842','N&C America':'#f5c842','N&C America':'#f5c842','N&C America':'#f5c842','South America':'#ff4d6d',
-                        'Asia':'#3dd6c0','Africa':'#ff9f43','Oceania':'#a29bfe'};
+    var streamColors = {
+        'Europe':        '#4a90e2',
+        'N&C America':   '#f5c842',
+        'South America': '#ff4d6d',
+        'Asia':          '#3dd6c0',
+        'Africa':        '#ff9f43',
+        'Oceania':       '#a29bfe'
+    };
 
     var x = d3.scaleLinear().domain(d3.extent(data,function(d){return d.year;})).range([0,W]);
-    var stack = d3.stack().keys(regions).offset(d3.stackOffsetWiggle).order(d3.stackOrderInsideOut);
+
+    // Use stackOffsetNone (zero baseline) so y-axis is meaningful
+    var stack = d3.stack().keys(regions).offset(d3.stackOffsetNone).order(d3.stackOrderDescending);
     var stacked = stack(data);
-    var y = d3.scaleLinear()
-        .domain([d3.min(stacked,function(l){return d3.min(l,function(d){return d[0];});}),
-                 d3.max(stacked,function(l){return d3.max(l,function(d){return d[1];})})])
-        .range([H,0]);
+    var maxY = d3.max(stacked, function(l){ return d3.max(l, function(d){ return d[1]; }); });
+    var y = d3.scaleLinear().domain([0, maxY]).range([H, 0]).nice();
+
+    // Grid lines
+    g.append('g').attr('class','grid')
+        .call(d3.axisLeft(y).ticks(5).tickSize(-W).tickFormat(''))
+        .selectAll('line').style('stroke','rgba(255,255,255,0.06)');
+    g.select('.grid .domain').remove();
 
     var area = d3.area()
         .x(function(d){return x(d.data.year);})
@@ -528,6 +540,7 @@ function drawStreamgraph() {
         .y1(function(d){return y(d[1]);})
         .curve(d3.curveBasis);
 
+    // Draw regions
     g.selectAll('.spath').data(stacked).join('path').attr('class','spath')
         .attr('d',area)
         .attr('fill',function(d){return streamColors[d.key]||C.muted;})
@@ -536,17 +549,40 @@ function drawStreamgraph() {
             var gNode = g.node();
             var yr = Math.round(x.invert(d3.pointer(e,gNode)[0]));
             var pt = data.find(function(r){return r.year===yr;});
-            var val = pt ? pt[d.key] : '?';
-            tip('<div class="tt-title">'+d.key+'</div>'+yr+': <span class="tt-val">'+val+' wins</span>',e);
-            g.selectAll('.spath').attr('opacity',function(dd){return dd.key===d.key?1:0.18;});
+            var val = pt ? pt[d.key] : 0;
+            var total = pt ? regions.reduce(function(s,r){ return s + (pt[r]||0); }, 0) : 0;
+            var pct = total > 0 ? Math.round(val/total*100) : 0;
+            tip('<div class="tt-title">'+d.key+'</div>'+yr+': <span class="tt-val">'+val+' wins</span><br><span class="tt-sub">'+pct+'% of all wins that year</span>',e);
+            g.selectAll('.spath').attr('opacity',function(dd){return dd.key===d.key?1:0.15;});
         })
         .on('mouseleave',function(){
             hideTip();
             g.selectAll('.spath').attr('opacity',0.82);
         });
 
+    // Axes
     g.append('g').attr('class','axis').attr('transform','translate(0,'+H+')')
         .call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(8));
+    g.append('g').attr('class','axis')
+        .call(d3.axisLeft(y).ticks(5));
+
+    // Y-axis label
+    g.append('text')
+        .attr('transform','rotate(-90)')
+        .attr('y', -M.left + 14)
+        .attr('x', -H/2)
+        .attr('text-anchor','middle')
+        .attr('fill','#b8c4d0')
+        .attr('font-size','11px')
+        .attr('font-family',"'DM Sans',sans-serif")
+        .text('Wins per year');
+
+    // Annotation: 1991 WC trigger line
+    var x1991 = x(1991);
+    g.append('line').attr('x1',x1991).attr('x2',x1991).attr('y1',0).attr('y2',H)
+        .attr('stroke','rgba(245,200,66,0.4)').attr('stroke-width',1).attr('stroke-dasharray','4,3');
+    g.append('text').attr('x',x1991+4).attr('y',14)
+        .attr('fill','rgba(245,200,66,0.7)').attr('font-size','9px').text('1991 WC');
 
     // Legend
     var legEl = document.getElementById('stream-legend');
@@ -590,9 +626,10 @@ function drawEconomicsChart() {
     });
 
     g.append('g').attr('class','grid')
-        .call(d3.axisLeft(y).ticks(5).tickSize(-W).tickFormat(function(d){return '$'+(d/1e6|0)+'M';}))
+        .call(d3.axisLeft(y).ticks(5).tickSize(-W).tickFormat(''))
         .select('.domain').remove();
     g.selectAll('.grid line').style('stroke','rgba(255,255,255,0.05)');
+    g.selectAll('.grid text').remove();
 
     g.selectAll('.bmen').data(wc).join('rect').attr('class','bmen')
         .attr('x',function(d){return x(d.year);}).attr('y',function(d){return y(d.men_prize);})
@@ -690,6 +727,44 @@ function drawBubbleChart() {
         bubbleG.attr('transform', function(d) {
             return 'translate('+Math.max(d.r, Math.min(W-d.r, d.x))+','+Math.max(d.r, Math.min(H-d.r, d.y))+')';
         });
+    });
+
+    // ── Size legend: "bubble size = goals" ──────────────────
+    var legG = svg.append('g').attr('transform','translate('+( W - 130)+','+(H-90)+')');
+    legG.append('text').attr('x',0).attr('y',-8)
+        .attr('fill','#b8c4d0').attr('font-size','9px')
+        .attr('font-family',"'DM Sans',sans-serif")
+        .attr('letter-spacing','0.08em')
+        .text('BUBBLE SIZE = GOALS');
+
+    [{ g: maxG, label: maxG+' goals', r: rScale(maxG)+9 },
+     { g: Math.round(maxG*0.6), label: Math.round(maxG*0.6)+' goals', r: rScale(Math.round(maxG*0.6))+9 },
+     { g: Math.round(maxG*0.3), label: Math.round(maxG*0.3)+' goals', r: rScale(Math.round(maxG*0.3))+9 }
+    ].forEach(function(item, i) {
+        var cx = 28 + i * 42;
+        var cy = 28 + (rScale(maxG)+9) - item.r;
+        legG.append('circle').attr('cx',cx).attr('cy',cy+item.r).attr('r',item.r)
+            .attr('fill','none').attr('stroke','rgba(255,255,255,0.25)').attr('stroke-width',1);
+        legG.append('text').attr('x',cx).attr('y',cy+item.r*2+12)
+            .attr('text-anchor','middle').attr('fill','#a0a8b8').attr('font-size','8px')
+            .text(item.label);
+    });
+
+    // ── Country colour legend (top-left) ────────────────────
+    var countries = [];
+    scorers.forEach(function(d){
+        if (countries.indexOf(d.country)===-1) countries.push(d.country);
+    });
+    var clegG = svg.append('g').attr('transform','translate(12,12)');
+    clegG.append('text').attr('x',0).attr('y',0)
+        .attr('fill','#b8c4d0').attr('font-size','9px').attr('letter-spacing','0.08em')
+        .text('COUNTRY');
+    countries.slice(0,8).forEach(function(c, i) {
+        var col = colorOrd(c);
+        clegG.append('circle').attr('cx',6).attr('cy',14+i*15).attr('r',5)
+            .attr('fill',col).attr('opacity',0.85);
+        clegG.append('text').attr('x',15).attr('y',18+i*15)
+            .attr('fill','#c8ccd8').attr('font-size','9px').text(c);
     });
 }
 
@@ -849,194 +924,7 @@ function drawTeamsRanking() {
 }
 
 /* ============================================================
-   11. SCATTER CHART
-   ============================================================ */
-function drawScatterChart() {
-    var el = document.getElementById('scatter-chart');
-    if (!el) return;
-    el.innerHTML = '';
-
-    var teams = DATA.top_teams.slice(0,30);
-    var M = {top:20,right:30,bottom:50,left:60};
-    var W = elW(el, 860) - M.left - M.right;
-    var H = 400 - M.top - M.bottom;
-
-    var svg = d3.select(el).append('svg').attr('width',W+M.left+M.right).attr('height',H+M.top+M.bottom).style('display','block');
-    var g = svg.append('g').attr('transform','translate('+M.left+','+M.top+')');
-
-    var x = d3.scaleLinear().domain([0, d3.max(teams,function(d){return d.matches;})*1.06]).range([0,W]).nice();
-    var y = d3.scaleLinear().domain([0,100]).range([H,0]);
-    var r = d3.scaleSqrt().domain([0, d3.max(teams,function(d){return d.goals_for;})]).range([4,20]);
-
-    g.append('g').attr('class','grid').call(d3.axisLeft(y).ticks(5).tickSize(-W).tickFormat(''));
-    g.selectAll('.grid line').style('stroke','rgba(255,255,255,0.04)');
-
-    // Quadrant lines
-    g.append('line').attr('x1',0).attr('x2',W).attr('y1',y(50)).attr('y2',y(50))
-        .attr('stroke','rgba(255,255,255,0.08)').attr('stroke-dasharray','4,3');
-    g.append('line').attr('x1',x(200)).attr('x2',x(200)).attr('y1',0).attr('y2',H)
-        .attr('stroke','rgba(255,255,255,0.08)').attr('stroke-dasharray','4,3');
-
-    g.selectAll('.sdot').data(teams).join('circle').attr('class','sdot')
-        .attr('cx',function(d){return x(d.matches);}).attr('cy',function(d){return y(d.win_rate);})
-        .attr('r',function(d){return r(d.goals_for);})
-        .attr('fill',function(d){return REGION_COLOR[d.region]||C.muted;})
-        .attr('stroke','rgba(0,0,0,0.35)').attr('stroke-width',1).attr('opacity',0.82)
-        .each(function(d){ this.__data__ = d; })
-        .on('mousemove',function(e,d){tip('<div class="tt-title">'+d.team+'</div>Matches: <span class="tt-val">'+d.matches+'</span><br>Win rate: <span class="tt-val">'+d.win_rate+'%</span><br>Goals: '+d.goals_for,e);})
-        .on('mouseleave',hideTip);
-
-    teams.filter(function(d){return d.matches>200||d.win_rate>70;}).forEach(function(d){
-        g.append('text').attr('x',x(d.matches)+r(d.goals_for)+3).attr('y',y(d.win_rate)+4)
-            .attr('fill',C.muted).attr('font-size','9px').text(d.team);
-    });
-
-    g.append('g').attr('class','axis').attr('transform','translate(0,'+H+')').call(d3.axisBottom(x).ticks(6));
-    g.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(5).tickFormat(function(d){return d+'%';}));
-
-    g.append('text').attr('x',W/2).attr('y',H+42).attr('text-anchor','middle')
-        .attr('fill',C.muted).attr('font-size','11px').text('Total Matches Played');
-    g.append('text').attr('transform','rotate(-90)').attr('y',-46).attr('x',-H/2)
-        .attr('text-anchor','middle').attr('fill',C.muted).attr('font-size','11px').text('Win Rate (%)');
-}
-
-/* ============================================================
-   12. HEAD-TO-HEAD EXPLORER
-   ============================================================ */
-function populateTeamSelects() {
-    var allTeams = DATA.all_teams.filter(function(t){
-        return DATA.top_teams.some(function(tt){return tt.team===t;});
-    }).sort();
-
-    ['team1-select','team2-select'].forEach(function(id) {
-        var sel = document.getElementById(id);
-        if (!sel) return;
-        sel.innerHTML = '<option value="">— Choose —</option>';
-        allTeams.forEach(function(t){
-            var opt = document.createElement('option');
-            opt.value=t; opt.textContent=t;
-            sel.appendChild(opt);
-        });
-    });
-
-    var s1 = document.getElementById('team1-select');
-    var s2 = document.getElementById('team2-select');
-    if (s1) s1.value = 'United States';
-    if (s2) s2.value = 'Germany';
-    updateComparison();
-}
-
-window.updateComparison = function() {
-    var t1 = document.getElementById('team1-select') ? document.getElementById('team1-select').value : '';
-    var t2 = document.getElementById('team2-select') ? document.getElementById('team2-select').value : '';
-    if (!t1||!t2||t1===t2) return;
-
-    var team1 = DATA.top_teams.find(function(t){return t.team===t1;});
-    var team2 = DATA.top_teams.find(function(t){return t.team===t2;});
-    if (!team1||!team2) return;
-
-    var h2hKey = t1+'|'+t2, h2hKeyR = t2+'|'+t1;
-    var h2h = DATA.head_to_head[h2hKey]||DATA.head_to_head[h2hKeyR];
-
-    var el = document.getElementById('comparison-result');
-    if (!el) return;
-    el.innerHTML = '';
-
-    var compDiv = document.createElement('div');
-    compDiv.className = 'comp-grid';
-    el.appendChild(compDiv);
-
-    function makeCol(team, cls) {
-        var col = document.createElement('div');
-        col.className = 'comp-stats-col '+cls;
-        col.innerHTML = '<div class="comp-team-header '+cls+'">'+team.team+'</div>';
-        var align = cls==='t2' ? ' style="text-align:right"' : '';
-        [['Wins',team.wins],['Win Rate',team.win_rate+'%'],['Matches',team.matches],
-         ['Goals For',team.goals_for],['Goals/Match',team.goals_per_match]].forEach(function(item){
-            col.innerHTML += '<div class="comp-stat-item"><div class="comp-stat-label'+align+'">'+item[0]+'</div><div class="comp-stat-val"'+align+'>'+item[1]+'</div></div>';
-        });
-        return col;
-    }
-
-    compDiv.appendChild(makeCol(team1,'t1'));
-
-    var radarWrap = document.createElement('div');
-    radarWrap.className = 'comp-radar-wrap'; radarWrap.id = 'comp-radar-wrap';
-    compDiv.appendChild(radarWrap);
-
-    compDiv.appendChild(makeCol(team2,'t2'));
-
-    drawRadarChart(team1, team2, radarWrap);
-
-    if (h2h) {
-        var box = document.createElement('div');
-        box.className = 'h2h-box';
-        var w1 = DATA.head_to_head[h2hKey] ? h2h.w1 : h2h.w2;
-        var w2 = DATA.head_to_head[h2hKey] ? h2h.w2 : h2h.w1;
-        box.innerHTML = '<div class="h2h-title">Head-to-Head Record ('+h2h.matches+' matches)</div>'+
-            '<div class="h2h-nums">'+
-            '<div><div class="h2h-big" style="color:var(--gold)">'+w1+'</div><div class="h2h-label">'+t1+' wins</div></div>'+
-            '<div class="h2h-vs">·</div>'+
-            '<div><div class="h2h-big" style="color:var(--text-muted)">'+h2h.draws+'</div><div class="h2h-label">Draws</div></div>'+
-            '<div class="h2h-vs">·</div>'+
-            '<div><div class="h2h-big" style="color:var(--teal)">'+w2+'</div><div class="h2h-label">'+t2+' wins</div></div>'+
-            '</div>';
-        el.appendChild(box);
-    }
-};
-
-function drawRadarChart(team1, team2, container) {
-    if (!container) return;
-    var size = 220, cx = size/2, cy = size/2, R = size*0.36;
-    var teams = DATA.top_teams;
-    var dims = [
-        {key:'win_rate',label:'Win Rate',max:d3.max(teams,function(d){return d.win_rate;})},
-        {key:'goals_per_match',label:'Goals/Match',max:d3.max(teams,function(d){return d.goals_per_match;})},
-        {key:'goals_for',label:'Goals Total',max:d3.max(teams,function(d){return d.goals_for;})},
-        {key:'matches',label:'Experience',max:d3.max(teams,function(d){return d.matches;})},
-        {key:'goal_diff',label:'Goal Diff',max:d3.max(teams,function(d){return d.goal_diff;})}
-    ];
-    var n = dims.length, angle = (2*Math.PI)/n;
-
-    var svg = d3.select(container).append('svg').attr('width',size).attr('height',size).style('display','block').style('margin','0 auto');
-    var g = svg.append('g').attr('transform','translate('+cx+','+cy+')');
-
-    [0.25,0.5,0.75,1].forEach(function(lv){
-        var pts = dims.map(function(d,i){
-            var a = angle*i-Math.PI/2;
-            return [Math.cos(a)*R*lv, Math.sin(a)*R*lv];
-        });
-        g.append('polygon').attr('points',pts.map(function(p){return p.join(',');}).join(' '))
-            .attr('fill','none').attr('stroke','rgba(255,255,255,0.08)').attr('stroke-width',1);
-    });
-
-    dims.forEach(function(d,i){
-        var a = angle*i-Math.PI/2;
-        g.append('line').attr('x1',0).attr('y1',0)
-            .attr('x2',Math.cos(a)*R).attr('y2',Math.sin(a)*R)
-            .attr('stroke','rgba(255,255,255,0.1)').attr('stroke-width',1);
-        g.append('text').attr('x',Math.cos(a)*(R+16)).attr('y',Math.sin(a)*(R+16))
-            .attr('text-anchor','middle').attr('dy','0.35em')
-            .attr('fill',C.muted).attr('font-size','9px').text(d.label);
-    });
-
-    [{team:team1,color:C.gold},{team:team2,color:C.teal}].forEach(function(item){
-        var pts = dims.map(function(d,i){
-            var a = angle*i-Math.PI/2;
-            var val = (item.team[d.key]||0)/d.max;
-            return [Math.cos(a)*R*val, Math.sin(a)*R*val];
-        });
-        g.append('polygon').attr('points',pts.map(function(p){return p.join(',');}).join(' '))
-            .attr('fill',item.color).attr('fill-opacity',0.15)
-            .attr('stroke',item.color).attr('stroke-width',2).attr('stroke-opacity',0.9);
-        g.selectAll(null).data(pts).join('circle')
-            .attr('cx',function(d){return d[0];}).attr('cy',function(d){return d[1];})
-            .attr('r',3).attr('fill',item.color);
-    });
-}
-
-/* ============================================================
-   SCATTER CHART — OVERWRITE with collision-avoided labels
+   11. SCATTER CHART — Win Rate vs Experience
    ============================================================ */
 function drawScatterChart() {
     var el = document.getElementById('scatter-chart');
