@@ -1032,3 +1032,139 @@ function drawScatterChart() {
     g.append('text').attr('transform','rotate(-90)').attr('y',-46).attr('x',-H/2)
         .attr('text-anchor','middle').attr('fill',C.muted).attr('font-size','11px').text('Win Rate (%)');
 }
+
+
+/* ============================================================
+   12. HEAD-TO-HEAD EXPLORER
+   ============================================================ */
+function populateTeamSelects() {
+    var allTeams = DATA.all_teams.filter(function(t){
+        return DATA.top_teams.some(function(tt){return tt.team===t;});
+    }).sort();
+
+    ['team1-select','team2-select'].forEach(function(id) {
+        var sel = document.getElementById(id);
+        if (!sel) return;
+        sel.innerHTML = '<option value="">— Choose —</option>';
+        allTeams.forEach(function(t){
+            var opt = document.createElement('option');
+            opt.value = t; opt.textContent = t;
+            sel.appendChild(opt);
+        });
+    });
+
+    var s1 = document.getElementById('team1-select');
+    var s2 = document.getElementById('team2-select');
+    if (s1) s1.value = 'United States';
+    if (s2) s2.value = 'Germany';
+    updateComparison();
+}
+
+window.updateComparison = function() {
+    var t1 = document.getElementById('team1-select') ? document.getElementById('team1-select').value : '';
+    var t2 = document.getElementById('team2-select') ? document.getElementById('team2-select').value : '';
+    if (!t1||!t2||t1===t2) return;
+
+    var team1 = DATA.top_teams.find(function(t){return t.team===t1;});
+    var team2 = DATA.top_teams.find(function(t){return t.team===t2;});
+    if (!team1||!team2) return;
+
+    var h2hKey = t1+'|'+t2, h2hKeyR = t2+'|'+t1;
+    var h2h = DATA.head_to_head[h2hKey]||DATA.head_to_head[h2hKeyR];
+
+    var el = document.getElementById('comparison-result');
+    if (!el) return;
+    el.innerHTML = '';
+
+    var compDiv = document.createElement('div');
+    compDiv.className = 'comp-grid';
+    el.appendChild(compDiv);
+
+    function makeCol(team, cls) {
+        var col = document.createElement('div');
+        col.className = 'comp-stats-col '+cls;
+        var alignStyle = cls==='t2' ? ' style="text-align:right"' : '';
+        col.innerHTML = '<div class="comp-team-header '+cls+'">'+team.team+'</div>';
+        [['Wins',team.wins],['Win Rate',team.win_rate+'%'],['Matches',team.matches],
+         ['Goals For',team.goals_for],['Goals/Match',team.goals_per_match]].forEach(function(item){
+            col.innerHTML += '<div class="comp-stat-item"><div class="comp-stat-label"'+alignStyle+'>'+item[0]+'</div><div class="comp-stat-val"'+alignStyle+'>'+item[1]+'</div></div>';
+        });
+        return col;
+    }
+
+    compDiv.appendChild(makeCol(team1,'t1'));
+
+    var radarWrap = document.createElement('div');
+    radarWrap.className = 'comp-radar-wrap';
+    radarWrap.id = 'comp-radar-wrap';
+    compDiv.appendChild(radarWrap);
+    compDiv.appendChild(makeCol(team2,'t2'));
+
+    drawRadarChart(team1, team2, radarWrap);
+
+    if (h2h) {
+        var box = document.createElement('div');
+        box.className = 'h2h-box';
+        var w1 = DATA.head_to_head[h2hKey] ? h2h.w1 : h2h.w2;
+        var w2 = DATA.head_to_head[h2hKey] ? h2h.w2 : h2h.w1;
+        box.innerHTML = '<div class="h2h-title">Head-to-Head Record ('+h2h.matches+' matches)</div>'+
+            '<div class="h2h-nums">'+
+            '<div><div class="h2h-big" style="color:var(--gold)">'+w1+'</div><div class="h2h-label">'+t1+' wins</div></div>'+
+            '<div class="h2h-vs">·</div>'+
+            '<div><div class="h2h-big" style="color:var(--text-muted)">'+h2h.draws+'</div><div class="h2h-label">Draws</div></div>'+
+            '<div class="h2h-vs">·</div>'+
+            '<div><div class="h2h-big" style="color:var(--teal)">'+w2+'</div><div class="h2h-label">'+t2+' wins</div></div>'+
+            '</div>';
+        el.appendChild(box);
+    }
+};
+
+function drawRadarChart(team1, team2, container) {
+    if (!container) return;
+    var size = 220, cx = size/2, cy = size/2, R = size*0.36;
+    var teams = DATA.top_teams;
+    var dims = [
+        {key:'win_rate',      label:'Win Rate', max:d3.max(teams,function(d){return d.win_rate;})},
+        {key:'goals_per_match',label:'Goals/Match',max:d3.max(teams,function(d){return d.goals_per_match;})},
+        {key:'goals_for',     label:'Goals Total',max:d3.max(teams,function(d){return d.goals_for;})},
+        {key:'matches',       label:'Experience',max:d3.max(teams,function(d){return d.matches;})},
+        {key:'goal_diff',     label:'Goal Diff',max:d3.max(teams,function(d){return d.goal_diff;})}
+    ];
+    var n = dims.length, angle = (2*Math.PI)/n;
+
+    var svg = d3.select(container).append('svg').attr('width',size).attr('height',size).style('display','block').style('margin','0 auto');
+    var g = svg.append('g').attr('transform','translate('+cx+','+cy+')');
+
+    [0.25,0.5,0.75,1].forEach(function(lv){
+        var pts = dims.map(function(d,i){
+            var a = angle*i-Math.PI/2;
+            return [Math.cos(a)*R*lv, Math.sin(a)*R*lv];
+        });
+        g.append('polygon').attr('points',pts.map(function(p){return p.join(',');}).join(' '))
+            .attr('fill','none').attr('stroke','rgba(255,255,255,0.1)').attr('stroke-width',1);
+    });
+
+    dims.forEach(function(d,i){
+        var a = angle*i-Math.PI/2;
+        g.append('line').attr('x1',0).attr('y1',0)
+            .attr('x2',Math.cos(a)*R).attr('y2',Math.sin(a)*R)
+            .attr('stroke','rgba(255,255,255,0.12)').attr('stroke-width',1);
+        g.append('text').attr('x',Math.cos(a)*(R+16)).attr('y',Math.sin(a)*(R+16))
+            .attr('text-anchor','middle').attr('dy','0.35em')
+            .attr('fill','#b8c4d0').attr('font-size','9px').text(d.label);
+    });
+
+    [{team:team1,color:'#f5c842'},{team:team2,color:'#3dd6c0'}].forEach(function(item){
+        var pts = dims.map(function(d,i){
+            var a = angle*i-Math.PI/2;
+            var val = (item.team[d.key]||0)/d.max;
+            return [Math.cos(a)*R*val, Math.sin(a)*R*val];
+        });
+        g.append('polygon').attr('points',pts.map(function(p){return p.join(',');}).join(' '))
+            .attr('fill',item.color).attr('fill-opacity',0.15)
+            .attr('stroke',item.color).attr('stroke-width',2).attr('stroke-opacity',0.9);
+        g.selectAll(null).data(pts).join('circle')
+            .attr('cx',function(d){return d[0];}).attr('cy',function(d){return d[1];})
+            .attr('r',3).attr('fill',item.color);
+    });
+}
