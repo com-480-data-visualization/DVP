@@ -178,9 +178,10 @@ window.resetRace = function() { clearInterval(raceTimer); raceRunning=false; rac
 /* ============================================================
    3. WORLD MAP
    ============================================================ */
-var mapYear=1991, mapAnimTimer=null, mapAnimRunning=false;
+var mapYear=1956, mapAnimTimer=null, mapAnimRunning=false;
 var mapSvg=null, mapProjection=null, mapPath=null;
 var teamFirstYear={};
+var currentHoveredCountry=null;
 
 function buildTeamFirstYear() {
     var fy={};
@@ -231,32 +232,84 @@ function drawWorldMap() {
 function renderMapYear(year) {
     if(!window._worldGeo||!mapSvg) return;
     var countries=topojson.feature(window._worldGeo,window._worldGeo.objects.countries);
-    mapSvg.selectAll('.country').data(countries.features).join('path').attr('class','country')
+
+    var paths = mapSvg.selectAll('.country').data(countries.features);
+
+    // Enter + Update
+    var pathsEnter = paths.enter().append('path').attr('class','country').attr('d',mapPath);
+
+    var allPaths = pathsEnter.merge(paths);
+
+    // Set base styles (no transition)
+    allPaths
         .attr('d',mapPath)
+        .attr('stroke','rgba(255,255,255,0.1)')
+        .attr('stroke-width',0.4)
+        .style('cursor','pointer')
+        .style('filter','none');
+
+    // Apply fill transition only
+    allPaths.transition().duration(300).ease(d3.easeCubicInOut)
         .attr('fill',function(d){
             var s=getCountryStatus(d.properties.name||'',year);
             if(s.status==='new') return C.rose;
             if(s.status==='active') return C.gold+'99';
             return 'rgba(255,255,255,0.06)';
+        });
+
+    // Remove old event handlers and add new ones (without transition)
+    allPaths
+        .on('mouseenter',null)
+        .on('mouseleave',null)
+        .on('click',null)
+        .on('mousemove',null);
+
+    allPaths.on('mouseenter',function(e,d){
+            var s=getCountryStatus(d.properties.name||'',mapYear);
+            if(s.status!=='none'){
+                // Reset previous hover
+                if(currentHoveredCountry && currentHoveredCountry !== this){
+                    d3.select(currentHoveredCountry)
+                        .attr('stroke','rgba(255,255,255,0.1)')
+                        .attr('stroke-width',0.4)
+                        .style('filter','none');
+                }
+                // Apply hover to current
+                currentHoveredCountry = this;
+                d3.select(this)
+                    .attr('stroke',C.gold)
+                    .attr('stroke-width',1.5)
+                    .style('filter','brightness(1.2)');
+            }
         })
-        .attr('stroke','rgba(255,255,255,0.1)').attr('stroke-width',0.4)
+        .on('mouseleave',function(e,d){
+            currentHoveredCountry = null;
+            d3.select(this)
+                .attr('stroke','rgba(255,255,255,0.1)')
+                .attr('stroke-width',0.4)
+                .style('filter','none');
+        })
         .on('click',function(e,d){
             var s=getCountryStatus(d.properties.name||'',mapYear);
             if(s.status!=='none'&&typeof CF!=='undefined'){
-                var t=window.DATA.top_teams.find(function(tt){return resolveCountry(tt.team)===resolveCountry(s.team||d.properties.name||'');});
-                CF.selectCountry(s.team||d.properties.name,t?t.region:null);
-            } else if(typeof CF!=='undefined'){ CF.clearSelection(); }
+                var teamName = s.team||d.properties.name;
+                var t=window.DATA.top_teams.find(function(tt){return resolveCountry(tt.team)===resolveCountry(teamName);});
+                var region = t ? t.region : 'Unknown';
+                CF.selectCountry(teamName, region);
+            } else if(typeof CF!=='undefined'){
+                CF.clearSelection();
+            }
         })
         .on('mousemove',function(e,d){
             var s=getCountryStatus(d.properties.name||'',year), name=d.properties.name||'Unknown';
             if(s.status!=='none'){
                 var ti=DATA.top_teams.find(function(t){return resolveCountry(t.team)===resolveCountry(name);});
                 var extra=ti?'<br><span class="tt-sub">Wins: '+ti.wins+' · WR: '+ti.win_rate+'%</span>':'';
-                tip('<div class="tt-title">'+(s.team||name)+'</div>First match: <span class="tt-val">'+s.year+'</span>'+extra,e);
-                document.getElementById('map-hover-info').textContent=(s.team||name)+' · First match: '+s.year;
+                tip('<div class="tt-title">'+(s.team||name)+'</div>First match: <span class="tt-val">'+s.year+'</span>'+extra+'<br><span class="tt-sub" style="color:'+C.gold+';">Click to view details →</span>',e);
+                document.getElementById('map-hover-info').textContent=(s.team||name)+' · Click to view details';
             } else { hideTip(); document.getElementById('map-hover-info').textContent=name+' · Not in dataset'; }
         })
-        .on('mouseleave',function(){ hideTip(); document.getElementById('map-hover-info').textContent='Click a nation to cross-filter charts'; });
+        .on('mouseleave',function(){ hideTip(); document.getElementById('map-hover-info').textContent='Click an active country to view detailed statistics'; });
     if(mapSvg.select('.graticule').empty()){
         mapSvg.insert('path',':first-child').attr('class','graticule').attr('d',mapPath(d3.geoGraticule()())).attr('fill','none').attr('stroke','rgba(255,255,255,0.03)').attr('stroke-width',0.5);
     }
@@ -273,7 +326,7 @@ window.toggleMapAnimation=function(){
     else{
         mapAnimRunning=true; btn.textContent='⏸ Pause';
         if(mapYear>=2025) mapYear=1956;
-        mapAnimTimer=setInterval(function(){ mapYear++; renderMapYear(mapYear); if(mapYear>=2025){clearInterval(mapAnimTimer);mapAnimRunning=false;btn.textContent='▶ Play';} },120);
+        mapAnimTimer=setInterval(function(){ mapYear++; renderMapYear(mapYear); if(mapYear>=2025){clearInterval(mapAnimTimer);mapAnimRunning=false;btn.textContent='▶ Play';} },350);
     }
 };
 

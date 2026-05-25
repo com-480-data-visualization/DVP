@@ -196,18 +196,17 @@
         <div class="map-controls-row">
             <button id="map-play-btn" class="btn-control" onclick="toggleMapAnimation()">▶ Play</button>
             <div class="map-slider-wrap">
-                <span class="map-year-badge" id="map-year-label">1991</span>
-                <input id="map-year-slider" type="range" min="1956" max="2025" step="1" value="1991" oninput="updateMapYear(this.value)">
+                <span class="map-year-badge" id="map-year-label">1956</span>
+                <input id="map-year-slider" type="range" min="1956" max="2025" step="1" value="1956" oninput="updateMapYear(this.value)">
             </div>
             <div class="map-live-count"><span id="map-team-count">0</span> nations</div>
         </div>
         <div id="world-map" class="viz-box map-viz-box"></div>
         <div class="map-legend-row">
-            <div class="mleg-item"><span class="mleg-dot new"></span> First appearance</div>
+            <div class="mleg-item"><span class="mleg-dot new"></span> First appearance this year</div>
             <div class="mleg-item"><span class="mleg-dot active"></span> Active nation</div>
-            <div class="mleg-item"><span class="mleg-dot none"></span> Not yet / no data</div>
-            <div id="map-hover-info" class="map-hover-info">Click a nation to cross-filter charts</div>
-        </div>
+            <div class="mleg-item"><span class="mleg-dot none"></span> Not yet in dataset</div>
+            <div id="map-hover-info" class="map-hover-info">Click an active country to view detailed statistics</div>        </div>
         <div class="narrator-quote fade-up">
             <div class="nq-mark">"</div>
             <div><blockquote>The 1991 World Cup was a trigger. Before it: a handful of European nations. After it: a cascade across every continent within a decade.</blockquote></div>
@@ -409,11 +408,20 @@
 
 
 </div><!-- end content-wrapper -->
-<div id="cf-badge" style="display:none;position:fixed;top:72px;left:50%;transform:translateX(-50%);
-     background:rgba(245,200,66,0.95);color:#05050a;padding:7px 18px;border-radius:20px;
-     font-family:'Oswald',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:.08em;
-     text-transform:uppercase;z-index:2000;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4);
-     align-items:center;gap:8px;white-space:nowrap;"></div>
+
+<!-- COUNTRY MODAL -->
+<div id="country-modal-overlay" onclick="CF.closeModal()"></div>
+<div id="country-modal">
+    <div class="modal-header">
+        <button class="modal-close" onclick="CF.closeModal()">&times;</button>
+        <h2 class="modal-country-name" id="modal-country-name">Country Name</h2>
+        <div class="modal-country-region" id="modal-country-region">Region</div>
+    </div>
+    <div class="modal-body" id="modal-body">
+        <!-- Content will be dynamically populated -->
+    </div>
+</div>
+
 <div id="tooltip" class="global-tooltip"></div>
 
 <script src="js/mapfix.js"></script>
