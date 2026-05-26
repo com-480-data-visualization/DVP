@@ -378,7 +378,7 @@ function drawStreamgraph() {
     var streamColors={'Europe':'#4a90e2','N&C America':'#f5c842','CONCACAF':'#f5c842','South America':'#ff4d6d','Asia':'#3dd6c0','Africa':'#ff9f43','Oceania':'#a29bfe'};
     var x=d3.scaleLinear().domain(d3.extent(data,function(d){return d.year;})).range([0,W]);
     // Zero baseline — y-axis is meaningful
-    var stack=d3.stack().keys(regions).offset(d3.stackOffsetNone).order(d3.stackOrderDescending);
+    var stack=d3.stack().keys(regions).offset(d3.stackOffsetNone).order(d3.stackOrderAscending);
     var stacked=stack(data);
     var maxY=d3.max(stacked,function(l){return d3.max(l,function(d){return d[1];});});
     var y=d3.scaleLinear().domain([0,maxY]).range([H,0]).nice();
