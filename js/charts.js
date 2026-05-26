@@ -217,7 +217,6 @@ function drawWorldMap() {
     if(!el) return;
     el.innerHTML='';
     teamFirstYear=buildTeamFirstYear();
-    // Merge extended aliases from mapfix.js if available
     if(window.countryAliases) Object.assign(countryAliases, window.countryAliases);
     var W=elW(el,880), H=500;
     mapSvg=d3.select(el).append('svg').attr('width',W).attr('height',H).style('display','block');
@@ -232,23 +231,10 @@ function drawWorldMap() {
 function renderMapYear(year) {
     if(!window._worldGeo||!mapSvg) return;
     var countries=topojson.feature(window._worldGeo,window._worldGeo.objects.countries);
-
     var paths = mapSvg.selectAll('.country').data(countries.features);
-
-    // Enter + Update
     var pathsEnter = paths.enter().append('path').attr('class','country').attr('d',mapPath);
-
     var allPaths = pathsEnter.merge(paths);
-
-    // Set base styles (no transition)
-    allPaths
-        .attr('d',mapPath)
-        .attr('stroke','rgba(255,255,255,0.1)')
-        .attr('stroke-width',0.4)
-        .style('cursor','pointer')
-        .style('filter','none');
-
-    // Apply fill transition only
+    allPaths.attr('d',mapPath).attr('stroke','rgba(255,255,255,0.1)').attr('stroke-width',0.4).style('cursor','pointer').style('filter','none');
     allPaths.transition().duration(300).ease(d3.easeCubicInOut)
         .attr('fill',function(d){
             var s=getCountryStatus(d.properties.name||'',year);
@@ -256,49 +242,28 @@ function renderMapYear(year) {
             if(s.status==='active') return C.gold+'99';
             return 'rgba(255,255,255,0.06)';
         });
-
-    // Remove old event handlers and add new ones (without transition)
-    allPaths
-        .on('mouseenter',null)
-        .on('mouseleave',null)
-        .on('click',null)
-        .on('mousemove',null);
-
+    allPaths.on('mouseenter',null).on('mouseleave',null).on('click',null).on('mousemove',null);
     allPaths.on('mouseenter',function(e,d){
             var s=getCountryStatus(d.properties.name||'',mapYear);
             if(s.status!=='none'){
-                // Reset previous hover
                 if(currentHoveredCountry && currentHoveredCountry !== this){
-                    d3.select(currentHoveredCountry)
-                        .attr('stroke','rgba(255,255,255,0.1)')
-                        .attr('stroke-width',0.4)
-                        .style('filter','none');
+                    d3.select(currentHoveredCountry).attr('stroke','rgba(255,255,255,0.1)').attr('stroke-width',0.4).style('filter','none');
                 }
-                // Apply hover to current
                 currentHoveredCountry = this;
-                d3.select(this)
-                    .attr('stroke',C.gold)
-                    .attr('stroke-width',1.5)
-                    .style('filter','brightness(1.2)');
+                d3.select(this).attr('stroke',C.gold).attr('stroke-width',1.5).style('filter','brightness(1.2)');
             }
         })
         .on('mouseleave',function(e,d){
             currentHoveredCountry = null;
-            d3.select(this)
-                .attr('stroke','rgba(255,255,255,0.1)')
-                .attr('stroke-width',0.4)
-                .style('filter','none');
+            d3.select(this).attr('stroke','rgba(255,255,255,0.1)').attr('stroke-width',0.4).style('filter','none');
         })
         .on('click',function(e,d){
             var s=getCountryStatus(d.properties.name||'',mapYear);
             if(s.status!=='none'&&typeof CF!=='undefined'){
                 var teamName = s.team||d.properties.name;
                 var t=window.DATA.top_teams.find(function(tt){return resolveCountry(tt.team)===resolveCountry(teamName);});
-                var region = t ? t.region : 'Unknown';
-                CF.selectCountry(teamName, region);
-            } else if(typeof CF!=='undefined'){
-                CF.clearSelection();
-            }
+                CF.selectCountry(teamName, t ? t.region : 'Unknown');
+            } else if(typeof CF!=='undefined'){ CF.clearSelection(); }
         })
         .on('mousemove',function(e,d){
             var s=getCountryStatus(d.properties.name||'',year), name=d.properties.name||'Unknown';
@@ -364,7 +329,7 @@ function drawChordDiagram() {
 }
 
 /* ============================================================
-   5. STREAMGRAPH — zero baseline + y-axis label
+   5. STREAMGRAPH — zero baseline + y-axis label + Europe on top
    ============================================================ */
 function drawStreamgraph() {
     var el=document.getElementById('stream-chart');
@@ -377,7 +342,7 @@ function drawStreamgraph() {
     var regions=STREAM_DATA.regions, data=STREAM_DATA.data;
     var streamColors={'Europe':'#4a90e2','N&C America':'#f5c842','CONCACAF':'#f5c842','South America':'#ff4d6d','Asia':'#3dd6c0','Africa':'#ff9f43','Oceania':'#a29bfe'};
     var x=d3.scaleLinear().domain(d3.extent(data,function(d){return d.year;})).range([0,W]);
-    // Zero baseline — y-axis is meaningful
+    // stackOrderAscending puts smallest regions at bottom, Europe (largest) on top
     var stack=d3.stack().keys(regions).offset(d3.stackOffsetNone).order(d3.stackOrderAscending);
     var stacked=stack(data);
     var maxY=d3.max(stacked,function(l){return d3.max(l,function(d){return d[1];});});
@@ -398,9 +363,7 @@ function drawStreamgraph() {
         .on('mouseleave',function(){ hideTip(); g.selectAll('.spath').attr('opacity',0.82); });
     g.append('g').attr('class','axis').attr('transform','translate(0,'+H+')').call(d3.axisBottom(x).tickFormat(d3.format('d')).ticks(8));
     g.append('g').attr('class','axis').call(d3.axisLeft(y).ticks(5));
-    // Y-axis label
     g.append('text').attr('transform','rotate(-90)').attr('y',-M.left+14).attr('x',-H/2).attr('text-anchor','middle').attr('fill','#b8c4d0').attr('font-size','11px').text('Wins per year');
-    // 1991 WC annotation
     var x1991=x(1991);
     g.append('line').attr('x1',x1991).attr('x2',x1991).attr('y1',0).attr('y2',H).attr('stroke','rgba(245,200,66,0.4)').attr('stroke-width',1).attr('stroke-dasharray','4,3');
     g.append('text').attr('x',x1991+4).attr('y',14).attr('fill','rgba(245,200,66,0.7)').attr('font-size','9px').text('1991 WC');
@@ -429,7 +392,6 @@ function drawEconomicsChart() {
         gr.append('stop').attr('offset','0%').attr('stop-color',i===0?C.teal:C.gold).attr('stop-opacity',0.9);
         gr.append('stop').attr('offset','100%').attr('stop-color',i===0?C.teal:C.gold).attr('stop-opacity',0.35);
     });
-    // Grid lines only — no labels (prevents double-rendering)
     g.append('g').attr('class','grid').call(d3.axisLeft(y).ticks(5).tickSize(-W).tickFormat('')).select('.domain').remove();
     g.selectAll('.grid line').style('stroke','rgba(255,255,255,0.05)');
     g.selectAll('.grid text').remove();
@@ -458,7 +420,7 @@ function drawEconomicsChart() {
 }
 
 /* ============================================================
-   7. BUBBLE CHART — with size + colour legends
+   7. BUBBLE CHART
    ============================================================ */
 function drawBubbleChart() {
     var el=document.getElementById('bubble-chart');
@@ -484,8 +446,6 @@ function drawBubbleChart() {
         .attr('fill','rgba(245,200,66,0.9)').attr('pointer-events','none').attr('font-size',function(d){return Math.max(7,Math.min(d.r*0.28,12))+'px';}).attr('font-family',"'Bebas Neue',sans-serif")
         .text(function(d){return d.r>16?d.goals:'';});
     sim.on('tick',function(){ bubbleG.attr('transform',function(d){return 'translate('+Math.max(d.r,Math.min(W-d.r,d.x))+','+Math.max(d.r,Math.min(H-d.r,d.y))+')'; }); });
-
-    // Country legend
     var countries=[];
     scorers.forEach(function(d){ if(countries.indexOf(d.country)===-1) countries.push(d.country); });
     var clegG=svg.append('g').attr('transform','translate(12,12)');
@@ -627,7 +587,6 @@ function drawScatterChart() {
         .each(function(d){ this.__data__=d; })
         .on('mousemove',function(e,d){tip('<div class="tt-title">'+d.team+'</div>Matches: <span class="tt-val">'+d.matches+'</span><br>Win rate: <span class="tt-val">'+d.win_rate+'%</span><br>Goals: '+d.goals_for,e);})
         .on('mouseleave',hideTip);
-    // Collision-avoided labels
     var labelData=teams.map(function(d){ return {team:d,tx:x(d.matches)+r(d.goals_for)+4,ty:y(d.win_rate)+4}; });
     for(var iter=0;iter<40;iter++){
         for(var i=0;i<labelData.length;i++){
