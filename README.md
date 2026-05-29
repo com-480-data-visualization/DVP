@@ -62,7 +62,7 @@ Report : [Milestone 2 Report](https://github.com/com-480-data-visualization/DVP/
 
 ## Milestone 3 (29th May, 5pm)
 
-Screencast : [Video Walkthrough](https://drive.google.com/file/d/1qZGAw3O_oByAsqgX97o9VKDP96bNKhKO/view?usp=sharing)
+ **Screencast** : [Video Walkthrough](https://drive.google.com/file/d/1qZGAw3O_oByAsqgX97o9VKDP96bNKhKO/view?usp=sharing)
 
 ## Milestone 3
  
@@ -70,7 +70,7 @@ Screencast : [Video Walkthrough](https://drive.google.com/file/d/1qZGAw3O_oByAsq
 |-------------|------|
 | 🌐 **Live Website** | [https://com-480-data-visualization.github.io/DVP/](https://com-480-data-visualization.github.io/DVP/) |
 | 📄 **Process Book** | 
-| 🎬 **Screencast** | See `Milestones/` folder |
+
  
 ---
  
