@@ -58,7 +58,7 @@ Our visual inspiration comes from [The Pudding](https://pudding.cool/) for their
 
 Website : https://com-480-data-visualization.github.io/DVP/
 
-Report : [Milestone 2 Report](https://github.com/com-480-data-visualization/DVP/blob/master/Milestone2.pdf)
+Report : [Milestone 2 Report](https://github.com/com-480-data-visualization/DVP/blob/master/Milestones/Milestone2.pdf)
 
 ## Milestone 3 (29th May, 5pm)
 
