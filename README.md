@@ -69,7 +69,7 @@ Report : [Milestone 2 Report](https://github.com/com-480-data-visualization/DVP/
 | Deliverable | Link |
 |-------------|------|
 | 🌐 **Live Website** | [https://com-480-data-visualization.github.io/DVP/](https://com-480-data-visualization.github.io/DVP/) |
-| 📄 **Process Book** | 
+| 📄 **Process Book** | [Process Book](https://github.com/com-480-data-visualization/DVP/blob/master/process_book.pdf)         |
 
  
 ---
