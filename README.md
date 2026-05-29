@@ -64,6 +64,130 @@ Report : [Milestone 2 Report](https://github.com/com-480-data-visualization/DVP/
 
 Screencast : [Video Walkthrough](https://drive.google.com/file/d/1qZGAw3O_oByAsqgX97o9VKDP96bNKhKO/view?usp=sharing)
 
+## Milestone 3
+ 
+| Deliverable | Link |
+|-------------|------|
+| 🌐 **Live Website** | [https://com-480-data-visualization.github.io/DVP/](https://com-480-data-visualization.github.io/DVP/) |
+| 📄 **Process Book** | 
+| 🎬 **Screencast** | See `Milestones/` folder |
+ 
+---
+ 
+## Overview
+ 
+**Beyond the Pitch** is a scrollytelling data visualization website that tells the story of women's international football through 10 interactive D3.js chapters — from the 50-year ban to 2 billion viewers.
+ 
+The site covers **11,177 matches**, **238 nations**, and **70 years of data** (1956–2025).
+ 
+---
+ 
+## Technical Setup
+ 
+### Requirements
+ 
+- A modern browser: **Chrome 90+**, Firefox 88+, Safari 14+, or Edge 90+
+- No Node.js, no npm, no build step required
+- Internet connection (to load D3.js, TopoJSON, and Google Fonts from CDN)
+### Running Locally
+ 
+**Option 1 — Open directly (simplest)**
+```bash
+open index.html        # macOS
+start index.html       # Windows
+xdg-open index.html    # Linux
+```
+All data is bundled in `data/bundle.js` — works offline.
+ 
+**Option 2 — Local server (recommended for development)**
+```bash
+python3 -m http.server 8080
+# then open http://localhost:8080
+```
+ 
+**Option 3 — VS Code Live Server**
+ 
+Install the [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer), right-click `index.html` → *Open with Live Server*.
+ 
+---
+ 
+## Project Structure
+ 
+```
+DVP/
+├── index.html              # Main single-page application (10 chapters)
+├── css/
+│   └── style.css           # Complete design system
+├── js/
+│   ├── charts.js           # All D3.js visualization functions
+│   ├── crossfilter.js      # Cross-chart filter (map click → modal + scatter + race)
+│   ├── interactions.js     # Scroll reveal, cursor, loader, nav, counters
+│   ├── background.js       # Canvas particle background
+│   └── mapfix.js           # Extended country name aliases (150+)
+├── data/
+│   ├── bundle.js           # All datasets inlined as window.BUNDLE (64KB)
+│   └── processed/
+│       ├── data.json        # Main dataset: teams, scorers, WC history, timeline
+│       ├── race_data.json   # Cumulative wins per team per year
+│       ├── chord_data.json  # Head-to-head win matrix (top 10 nations)
+│       └── stream_data.json # Regional wins per year
+├── img/
+│   ├── bg_pitch.jpg        # Football pitch background
+│   ├── img_marta.jpg       # Marta (Brazil)
+│   ├── img_prinz.webp      # Birgit Prinz (Germany)
+│   ├── img_wambach.jpg     # Abby Wambach (United States)
+│   ├── img_hero1.jpg       # Hero collage — player 1
+│   ├── img_hero2.webp      # Hero collage — player 2
+│   ├── img_hero3.avif      # Hero collage — player 3
+│   ├── img_hero4.jpg       # Hero collage — player 4
+│   └── img_salma.webp      # Salma Paralluelo (Spain)
+├── Milestones/             # Milestone 1, 2, 3 deliverables
+├── process_book.pdf        # Full design and development documentation
+└── README.md               # This file
+```
+ 
+---
+ 
+## Data Sources
+ 
+| Dataset | Source | Records |
+|---------|--------|---------|
+| Women's International Football Results | [Kaggle](https://www.kaggle.com/) | 11,177 matches |
+| World Cup Prize Money | FIFA official communications | 9 editions |
+| World Cup Attendance | FIFA official communications | 9 editions |
+ 
+Data preprocessing done in Python (pandas). All datasets bundled into `data/bundle.js`.
+ 
+---
+ 
+## Visualizations
+ 
+| Chapter | Type | Key Insight |
+|---------|------|-------------|
+| 01 | Annotated area chart | Nations growth — 2 to 238 with historical triggers |
+| 02 | Animated bar chart race | USA rise, Germany dominance, new challengers |
+| 03 | Animated choropleth map | World expansion post-1991, click for country details |
+| 04 | D3 chord / ribbon diagram | Top 10 rivalry matrix — USA leads 16–2 vs Germany |
+| 05 | Stacked area streamgraph | Continental power shift, Europe on top |
+| 06 | Dual bar chart | Men vs women prize money — $0 for 24 years |
+| 07 | Force-directed bubble chart | Top 1,055 scorers by goals |
+| 08 | Radial clock + bar chart | Goal timing — 45′ and 85′+ spikes |
+| 09 | Scatter plot | Win rate vs experience — dominance quadrant |
+| 10 | Radar + head-to-head | Compare any two nations across 5 dimensions |
+ 
+---
+ 
+## Interactive Features
+ 
+- **Country detail modal** — click any nation on the map for full stats + win history chart
+- **Cross-filtering** — map click highlights matching team in scatter and race chart
+- **Bar chart race** — play/pause/speed controls, 1956 to 2025
+- **World map animation** — year slider or auto-play
+- **Head-to-head explorer** — select any two nations for radar + H2H record
+- **Story Guide** — floating button with 8 pre-scripted data stories
+---
+ 
+
 *80% of the final grade*
 
 ### Late policy
