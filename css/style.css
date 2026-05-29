@@ -1438,7 +1438,7 @@ em{color:var(--gold);font-style:normal}
 /* ── Global background: pitch image, fixed so it stays behind everything ── */
 body {
     background-color: #0d2a0d !important;
-    background-image: url('../bg_pitch.jpg') !important;
+    background-image: url('../img/bg_pitch.jpg') !important;
     background-size: cover !important;
     background-attachment: fixed !important;
     background-position: center center !important;
