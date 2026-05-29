@@ -64,7 +64,6 @@ Report : [Milestone 2 Report](https://github.com/com-480-data-visualization/DVP/
 
  **Screencast** : [Video Walkthrough](https://drive.google.com/file/d/1qZGAw3O_oByAsqgX97o9VKDP96bNKhKO/view?usp=sharing)
 
-## Milestone 3
  
 | Deliverable | Link |
 |-------------|------|
